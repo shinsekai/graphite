@@ -18,7 +18,7 @@ export const validateEnv = (rawEnv: Record<string, unknown>): Env => {
 	const result = envSchema.safeParse(rawEnv);
 
 	if (!result.success) {
-		const errors = result.error.errors
+		const errors = result.error.issues
 			.map((e) => `  - ${e.path.join('.')}: ${e.message}`)
 			.join('\n');
 		console.error(`Environment validation failed:\n${errors}`);
