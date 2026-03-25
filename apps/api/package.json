@@ -13,7 +13,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "hono": "^4.7.6"
+    "hono": "^4.7.6",
+    "zod": "^4.0.8"
   },
   "devDependencies": {
     "@graphite/config": "workspace:*",
