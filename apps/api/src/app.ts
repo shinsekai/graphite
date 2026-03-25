@@ -3,12 +3,12 @@ import { cors } from 'hono/cors';
 import type { Env } from './env';
 import { errorHandler } from './middleware/error-handler';
 import { auth } from './middleware/auth';
-
-export type Db = unknown;
+import type { DrizzleDB } from '@graphite/db';
+import { createNotesRoutes } from './routes/notes';
 
 export interface AppDeps {
 	env: Env;
-	db: Db;
+	db: DrizzleDB;
 }
 
 export function createApp(deps: AppDeps): Hono {
@@ -31,8 +31,8 @@ export function createApp(deps: AppDeps): Hono {
 	// Auth middleware for all other routes
 	app.use('/api/*', auth(deps.env));
 
-	// API routes will be registered here
-	// app.route('/api', createNotesRoutes(deps));
+	// API routes
+	app.route('/api/notes', createNotesRoutes(deps));
 
 	return app;
 }

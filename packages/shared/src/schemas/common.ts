@@ -34,6 +34,6 @@ export const searchQuerySchema = z.object({
 /**
  * Inferred TypeScript types.
  */
-export type ApiSuccess<T> = z.infer<ReturnType<typeof apiSuccessSchema<T>>>;
+export type ApiSuccess<T> = { data: T };
 export type ApiError = z.infer<typeof apiErrorSchema>;
 export type SearchQuery = z.infer<typeof searchQuerySchema>;

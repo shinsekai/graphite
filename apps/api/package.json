@@ -13,13 +13,17 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@graphite/db": "workspace:*",
+    "@graphite/shared": "workspace:*",
     "hono": "^4.7.6",
     "zod": "^4.0.8"
   },
   "devDependencies": {
     "@graphite/config": "workspace:*",
     "bun-types": "^1.3.11",
+    "drizzle-orm": "^0.40.1",
     "typescript": "^5.8.0",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.7",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }
