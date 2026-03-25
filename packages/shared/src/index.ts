@@ -5,4 +5,10 @@
  * and constants used across the application.
  */
 
-export const placeholder = 'Shared package placeholder';
+// Re-export all schemas
+export * from './schemas/note';
+export * from './schemas/upload';
+export * from './schemas/common';
+
+// Re-export constants
+export * from './constants';
