@@ -5,4 +5,5 @@
  * Schema definitions and migrations are managed here.
  */
 
-export const placeholder = 'Database package placeholder';
+export * from './schema/index.js';
+export { createDb } from './client.js';
