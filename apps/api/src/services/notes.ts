@@ -2,10 +2,14 @@ import type { DrizzleDB } from '@graphite/db';
 import { notes } from '@graphite/db';
 import type { CreateNote, NoteSummary, Note, UpdateNote } from '@graphite/shared';
 import { NOTE_PREVIEW_LENGTH } from '@graphite/shared';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import type { UploadsService } from './uploads';
+import { eq, desc, sql } from 'drizzle-orm';
 
 export class NotesService {
-	constructor(private readonly db: DrizzleDB) {}
+	constructor(
+		private readonly db: DrizzleDB,
+		private readonly uploadsService?: UploadsService,
+	) {}
 
 	async list(): Promise<NoteSummary[]> {
 		const result = await this.db
@@ -43,7 +47,7 @@ export class NotesService {
 		return {
 			id: note.id,
 			title: note.title,
-			content: note.content,
+			content: note.content as unknown as Note['content'],
 			plaintext: note.plaintext,
 			pinned: note.pinned,
 			createdAt: note.createdAt.toISOString(),
@@ -68,7 +72,7 @@ export class NotesService {
 		return {
 			id: note.id,
 			title: note.title,
-			content: note.content,
+			content: note.content as unknown as Note['content'],
 			plaintext: note.plaintext,
 			pinned: note.pinned,
 			createdAt: note.createdAt.toISOString(),
@@ -109,7 +113,7 @@ export class NotesService {
 		return {
 			id: note.id,
 			title: note.title,
-			content: note.content,
+			content: note.content as unknown as Note['content'],
 			plaintext: note.plaintext,
 			pinned: note.pinned,
 			createdAt: note.createdAt.toISOString(),
@@ -125,6 +129,11 @@ export class NotesService {
 
 		if (result.length === 0) {
 			return null;
+		}
+
+		// Clean up images associated with the note
+		if (this.uploadsService) {
+			await this.uploadsService.removeByNoteId(id);
 		}
 
 		return result[0];
@@ -157,6 +166,6 @@ export class NotesService {
 	}
 }
 
-export function createNotesService(db: DrizzleDB): NotesService {
-	return new NotesService(db);
+export function createNotesService(db: DrizzleDB, uploadsService?: UploadsService): NotesService {
+	return new NotesService(db, uploadsService);
 }

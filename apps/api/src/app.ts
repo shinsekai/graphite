@@ -5,10 +5,13 @@ import { errorHandler } from './middleware/error-handler';
 import { auth } from './middleware/auth';
 import type { DrizzleDB } from '@graphite/db';
 import { createNotesRoutes } from './routes/notes';
+import { createUploadsRoutes } from './routes/uploads';
+import type { S3StorageClient } from './lib/s3-client';
 
 export interface AppDeps {
 	env: Env;
 	db: DrizzleDB;
+	s3: S3StorageClient;
 }
 
 export function createApp(deps: AppDeps): Hono {
@@ -33,6 +36,7 @@ export function createApp(deps: AppDeps): Hono {
 
 	// API routes
 	app.route('/api/notes', createNotesRoutes(deps));
+	app.route('/api/uploads', createUploadsRoutes(deps));
 
 	return app;
 }

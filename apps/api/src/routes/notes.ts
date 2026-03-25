@@ -10,11 +10,13 @@ import {
 	noteSchema,
 } from '@graphite/shared';
 import { createNotesService } from '../services/notes';
+import { createUploadsService } from '../services/uploads';
 import { HTTPException } from 'hono/http-exception';
 
 export function createNotesRoutes(deps: AppDeps): Hono {
 	const app = new Hono();
-	const notesService = createNotesService(deps.db as DrizzleDB);
+	const uploadsService = createUploadsService(deps.db as DrizzleDB, deps.s3);
+	const notesService = createNotesService(deps.db as DrizzleDB, uploadsService);
 
 	// Search route must come before /:id to avoid param capture
 	app.get(

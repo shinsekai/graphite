@@ -1,4 +1,5 @@
 import { type Hono, type ErrorHandler } from 'hono';
+import { HTTPException } from 'hono/http-exception';
 
 export class AppError extends Error {
 	constructor(
@@ -13,6 +14,18 @@ export class AppError extends Error {
 
 export const createErrorHandler = (): ErrorHandler => {
 	return (error, context) => {
+		if (error instanceof HTTPException) {
+			return context.json(
+				{
+					error: {
+						code: 'HTTP_ERROR',
+						message: error.message,
+					},
+				},
+				error.status as 400 | 401 | 403 | 404 | 500,
+			);
+		}
+
 		if (error instanceof AppError) {
 			return context.json(
 				{

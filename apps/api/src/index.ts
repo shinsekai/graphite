@@ -1,6 +1,7 @@
 import { getEnv } from './env';
 import { createDb } from '@graphite/db';
 import { createApp } from './app';
+import { createS3Client } from './lib/s3-client';
 
 async function main() {
 	const env = getEnv();
@@ -16,7 +17,15 @@ async function main() {
 	}
 
 	const db = createDb(env.DATABASE_URL);
-	const app = createApp({ env, db });
+	const s3 = createS3Client({
+		endpoint: env.S3_ENDPOINT,
+		bucket: env.S3_BUCKET,
+		accessKey: env.S3_ACCESS_KEY,
+		secretKey: env.S3_SECRET_KEY,
+		region: env.S3_REGION,
+	});
+
+	const app = createApp({ env, db, s3 });
 
 	const server = Bun.serve({
 		fetch: app.fetch,
