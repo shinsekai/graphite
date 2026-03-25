@@ -1,0 +1,27 @@
+{
+  "name": "graphite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Your thoughts, your infrastructure.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "check": "turbo run check",
+    "test": "turbo run test",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "db:migrate": "turbo run db:migrate",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "bun-types": "^1.3.11",
+    "turbo": "^2.4.3",
+    "typescript": "^5.8.0"
+  },
+  "packageManager": "bun@1.2.3"
+}
