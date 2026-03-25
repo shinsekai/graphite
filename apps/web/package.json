@@ -1,0 +1,30 @@
+{
+  "name": "@graphite/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Graphite web application (React + Vite)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "biome check src",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@graphite/config": "workspace:*",
+    "@testing-library/react": "^16.2.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "jsdom": "^29.0.1",
+    "typescript": "^5.8.0",
+    "vite": "^7.0.6",
+    "vitest": "^3.0.7"
+  }
+}

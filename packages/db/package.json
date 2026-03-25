@@ -1,0 +1,25 @@
+{
+  "name": "@graphite/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Drizzle ORM database layer",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "biome check src",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.40.1"
+  },
+  "devDependencies": {
+    "@graphite/config": "workspace:*",
+    "drizzle-kit": "^0.31.2",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.7"
+  }
+}
