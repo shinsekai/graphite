@@ -16,6 +16,9 @@
   "dependencies": {
     "drizzle-orm": "^0.40.1"
   },
+  "peerDependencies": {
+    "postgres": "^3.4.0"
+  },
   "devDependencies": {
     "@graphite/config": "workspace:*",
     "drizzle-kit": "^0.31.2",
