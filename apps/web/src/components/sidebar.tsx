@@ -3,6 +3,7 @@ import { useDebounce } from '../hooks/use-debounce';
 import { useNotes, useSearchNotes, useCreateNote, useDeleteNote } from '../hooks/use-notes';
 import { SearchInput } from './search-input';
 import { NoteListItem } from './note-list-item';
+import { ConfirmModal } from './confirm-modal';
 import { Plus, Menu, X } from 'lucide-react';
 import styles from './sidebar.module.css';
 
@@ -22,6 +23,7 @@ export function Sidebar({
   isMobile = false,
 }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const debouncedQuery = useDebounce(searchQuery, 300);
 
   const { data: notes = [], isLoading } = useNotes();
@@ -55,12 +57,21 @@ export function Sidebar({
   };
 
   const handleDeleteNote = (id: string): void => {
-    if (window.confirm('Are you sure you want to delete this note?')) {
-      deleteNote.mutate(id);
-      if (activeNoteId === id) {
+    setDeleteTarget(id);
+  };
+
+  const handleConfirmDelete = (): void => {
+    if (deleteTarget) {
+      deleteNote.mutate(deleteTarget);
+      if (activeNoteId === deleteTarget) {
         onSelectNote('');
       }
     }
+    setDeleteTarget(null);
+  };
+
+  const handleCancelDelete = (): void => {
+    setDeleteTarget(null);
   };
 
   const handleSearchChange = (value: string): void => {
@@ -131,6 +142,15 @@ export function Sidebar({
           role="presentation"
         />
       )}
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="Delete note"
+        message="This note will be permanently deleted. This action cannot be undone."
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </>
   );
 }
