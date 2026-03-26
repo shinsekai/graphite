@@ -41,11 +41,7 @@ export function FloatingToolbar({ editor }: FloatingToolbarProps) {
   };
 
   return (
-    <BubbleMenu
-      editor={editor}
-      tippyOptions={{ duration: 100 }}
-      className={styles.bubbleMenu}
-    >
+    <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }} className={styles.bubbleMenu}>
       <div className={styles.toolbar}>
         <button
           type="button"

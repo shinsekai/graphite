@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { EditorToolbar } from './editor-toolbar';
+import styles from './editor-toolbar.module.css';
 
 const mockEditor = {
   isActive: vi.fn(() => false),
@@ -114,6 +115,15 @@ describe('EditorToolbar', () => {
     });
   });
 
+  describe('Toolbar container', () => {
+    it('applies toolbar class to container', () => {
+      const { container } = render(<EditorToolbar editor={mockEditor as never} />);
+
+      const toolbar = container.querySelector(`.${styles.toolbar}`);
+      expect(toolbar).toBeInTheDocument();
+    });
+  });
+
   describe('Active states', () => {
     it('applies active class when Bold is active', () => {
       const activeEditor = { ...mockEditor, isActive: vi.fn(() => true) };
@@ -122,7 +132,159 @@ describe('EditorToolbar', () => {
 
       const boldButton = screen.getByLabelText('Bold');
       const className = boldButton.className;
-      expect(className).toContain('active');
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Italic is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'italic'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const italicButton = screen.getByLabelText('Italic');
+      const className = italicButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Underline is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'underline'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const underlineButton = screen.getByLabelText('Underline');
+      const className = underlineButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Strikethrough is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'strike'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const strikeButton = screen.getByLabelText('Strikethrough');
+      const className = strikeButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Code is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'code'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const codeButton = screen.getByLabelText('Inline code');
+      const className = codeButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Link is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'link'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const linkButton = screen.getByLabelText('Link');
+      const className = linkButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Heading 1 is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn(
+          (format: string, attrs?: { level?: number }) =>
+            format === 'heading' && attrs?.level === 1,
+        ),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const headingButton = screen.getByLabelText('Heading 1');
+      const className = headingButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Heading 2 is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn(
+          (format: string, attrs?: { level?: number }) =>
+            format === 'heading' && attrs?.level === 2,
+        ),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const headingButton = screen.getByLabelText('Heading 2');
+      const className = headingButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Heading 3 is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn(
+          (format: string, attrs?: { level?: number }) =>
+            format === 'heading' && attrs?.level === 3,
+        ),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const headingButton = screen.getByLabelText('Heading 3');
+      const className = headingButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Bullet list is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'bulletList'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const listButton = screen.getByLabelText('Bullet list');
+      const className = listButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Ordered list is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'orderedList'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const listButton = screen.getByLabelText('Numbered list');
+      const className = listButton.className;
+      expect(className).toContain(styles.active);
+    });
+
+    it('applies active class when Blockquote is active', () => {
+      const activeEditor = {
+        ...mockEditor,
+        isActive: vi.fn((format: string) => format === 'blockquote'),
+      };
+
+      render(<EditorToolbar editor={activeEditor as never} />);
+
+      const quoteButton = screen.getByLabelText('Blockquote');
+      const className = quoteButton.className;
+      expect(className).toContain(styles.active);
     });
 
     it('applies active class when Code block is active', () => {
@@ -135,7 +297,16 @@ describe('EditorToolbar', () => {
 
       const codeBlockButton = screen.getByLabelText('Code block');
       const className = codeBlockButton.className;
-      expect(className).toContain('active');
+      expect(className).toContain(styles.active);
+    });
+  });
+
+  describe('Separators', () => {
+    it('renders separators between button groups', () => {
+      const { container } = render(<EditorToolbar editor={mockEditor as never} />);
+
+      const dividers = container.querySelectorAll(`.${styles.divider}`);
+      expect(dividers.length).toBeGreaterThan(0);
     });
   });
 });

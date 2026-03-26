@@ -1,0 +1,261 @@
+/**
+ * Prose Mirror Editor Styles
+ * TipTap/ProseMirror content styling following Graphite design aesthetic
+ */
+
+.prose-editor {
+  outline: none;
+  min-height: 400px;
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: var(--line-height-normal);
+}
+
+.prose-editor > *:first-child {
+  margin-top: 0;
+}
+
+.prose-editor > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Headings */
+.prose-editor h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 24px 0 16px 0;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.prose-editor h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 20px 0 14px 0;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.prose-editor h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 16px 0 12px 0;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+/* Paragraphs */
+.prose-editor p {
+  margin: 8px 0;
+}
+
+.prose-editor p:empty::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Text formatting */
+.prose-editor strong,
+.prose-editor b {
+  font-weight: 600;
+}
+
+.prose-editor em,
+.prose-editor i {
+  font-style: italic;
+}
+
+/* Links */
+.prose-editor a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  transition: color var(--duration-fast) var(--ease-default);
+}
+
+.prose-editor a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Inline code */
+.prose-editor code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 2px 6px;
+  background-color: var(--color-elevated);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+}
+
+/* Code blocks */
+.prose-editor pre {
+  margin: 12px 0;
+  padding: 16px;
+  background-color: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: var(--line-height-relaxed);
+}
+
+.prose-editor pre code {
+  padding: 0;
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: none;
+}
+
+/* Syntax highlighting colors (dracula-inspired theme) */
+.prose-editor pre .token.comment,
+.prose-editor pre .token.prolog,
+.prose-editor pre .token.doctype,
+.prose-editor pre .token.cdata {
+  color: #6272a4;
+}
+
+.prose-editor pre .token.punctuation {
+  color: #f8f8f2;
+}
+
+.prose-editor pre .token.property,
+.prose-editor pre .token.tag,
+.prose-editor pre .token.constant,
+.prose-editor pre .token.symbol {
+  color: #ff79c6;
+}
+
+.prose-editor pre .token.boolean,
+.prose-editor pre .token.number {
+  color: #bd93f9;
+}
+
+.prose-editor pre .token.selector,
+.prose-editor pre .token.attr-name,
+.prose-editor pre .token.string,
+.prose-editor pre .token.char,
+.prose-editor pre .token.builtin {
+  color: #f1fa8c;
+}
+
+.prose-editor pre .token.inserted {
+  color: #50fa7b;
+}
+
+.prose-editor pre .token.operator,
+.prose-editor pre .token.entity,
+.prose-editor pre .token.url,
+.prose-editor pre .token.variable {
+  color: #f8f8f2;
+}
+
+.prose-editor pre .token.atrule,
+.prose-editor pre .token.attr-value,
+.prose-editor pre .token.function {
+  color: #f1fa8c;
+}
+
+.prose-editor pre .token.keyword {
+  color: #ff79c6;
+}
+
+.prose-editor pre .token.regex,
+.prose-editor pre .token.important {
+  color: #ffb86c;
+}
+
+.prose-editor pre .token.deleted {
+  color: #ff5555;
+}
+
+/* Blockquotes */
+.prose-editor blockquote {
+  margin: 12px 0;
+  padding: 8px 16px;
+  border-left: 3px solid var(--color-accent);
+  background-color: var(--color-elevated);
+  color: var(--color-text-secondary);
+}
+
+.prose-editor blockquote p {
+  margin: 0;
+}
+
+/* Lists */
+.prose-editor ul,
+.prose-editor ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.prose-editor ul {
+  list-style-type: disc;
+}
+
+.prose-editor ol {
+  list-style-type: decimal;
+}
+
+.prose-editor ul li,
+.prose-editor ol li {
+  margin: 4px 0;
+}
+
+/* Task lists */
+.prose-editor ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+}
+
+.prose-editor ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  margin: 4px 0;
+}
+
+.prose-editor ul[data-type="taskList"] li label {
+  flex: 0 0 auto;
+  margin-right: 8px;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.prose-editor ul[data-type="taskList"] li input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.prose-editor ul[data-type="taskList"] li div {
+  flex: 1;
+}
+
+.prose-editor ul[data-type="taskList"] li p {
+  margin: 0;
+}
+
+/* Horizontal rule */
+.prose-editor hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Selected node */
+.prose-editor .ProseMirror-selectednode {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Placeholder for empty editor */
+.prose-editor p.is-editor-empty:first-child::before {
+  color: var(--color-text-muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
