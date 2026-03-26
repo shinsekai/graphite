@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "bun --watch run src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "tsc",
+    "build": "echo 'API runs TypeScript directly via Bun — no build step needed'",
     "check": "biome check src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

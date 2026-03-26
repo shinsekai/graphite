@@ -30,7 +30,8 @@ RUN apk add --no-cache dumb-init
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/apps/api/package.json ./apps/api/
-COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/apps/api/tsconfig.json ./apps/api/
+COPY --from=builder /app/apps/api/src ./apps/api/src
 COPY --from=builder /app/apps/web/dist ./apps/web/dist
 # Copy drizzle migrations and source files for runtime migrations
 COPY --from=builder /app/packages/db/drizzle ./packages/db/drizzle
@@ -50,4 +51,4 @@ EXPOSE 3000
 
 # Start with dumb-init and bind to 0.0.0.0 for Scaleway health detection
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["bun", "run", "apps/api/dist/index.js"]
+CMD ["bun", "run", "apps/api/src/index.ts"]
