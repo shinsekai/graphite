@@ -3,6 +3,11 @@ FROM oven/bun:1 AS deps
 WORKDIR /app
 
 COPY package.json bun.lock* ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+COPY packages/config/package.json ./packages/config/
+COPY packages/db/package.json ./packages/db/
+COPY packages/shared/package.json ./packages/shared/
 RUN bun install --frozen-lockfile
 
 # Stage 2: Build
