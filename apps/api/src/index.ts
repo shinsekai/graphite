@@ -1,19 +1,19 @@
-import { createDb } from '@graphite/db';
+import { createDb, runMigrations } from '@graphite/db';
 import { createApp } from './app';
 import { getEnv } from './env';
 
 async function main() {
   const env = getEnv();
 
-  // Verify DB connection before starting the server
+  // Run migrations before starting the server (critical for Scaleway)
   try {
-    const db = createDb(env.DATABASE_URL);
-    await db.execute('SELECT 1');
+    await runMigrations(env.DATABASE_URL);
   } catch (error) {
-    console.error('Failed to connect to database:', error);
+    console.error('Failed to run migrations:', error);
     process.exit(1);
   }
 
+  // Create DB connection after migrations
   const db = createDb(env.DATABASE_URL);
   const app = createApp({ env, db });
 

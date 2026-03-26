@@ -1,5 +1,5 @@
 {
-  "id": "a70ab151-1f98-4c1a-97c5-e789ff763be7",
+  "id": "aefa209a-28ec-4ba0-84b4-0162e336a62e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -78,79 +78,6 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.images": {
-      "name": "images",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "note_id": {
-          "name": "note_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "varchar(1024)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "filename": {
-          "name": "filename",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "mime_type": {
-          "name": "mime_type",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "size_bytes": {
-          "name": "size_bytes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "images_note_id_notes_id_fk": {
-          "name": "images_note_id_notes_id_fk",
-          "tableFrom": "images",
-          "tableTo": "notes",
-          "columnsFrom": ["note_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "images_s3_key_unique": {
-          "name": "images_s3_key_unique",
-          "nullsNotDistinct": false,
-          "columns": ["s3_key"]
-        }
-      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

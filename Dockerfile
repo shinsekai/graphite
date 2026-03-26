@@ -29,8 +29,19 @@ RUN apk add --no-cache dumb-init
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/apps/api/package.json ./apps/api/
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/web/dist ./apps/web/dist
+# Copy drizzle migrations and source files for runtime migrations
+COPY --from=builder /app/packages/db/drizzle ./packages/db/drizzle
+COPY --from=builder /app/packages/db/src ./packages/db/src
+COPY --from=builder /app/packages/db/package.json ./packages/db/package.json
+COPY --from=builder /app/packages/shared/src ./packages/shared/src
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=builder /app/packages/config/package.json ./packages/config/package.json
+
+# Run bun install to resolve workspace symlinks
+RUN bun install --frozen-lockfile
 
 ENV NODE_ENV=production
 ENV PORT=3000
