@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { FloatingToolbar } from './floating-toolbar';
 
-vi.mock('@tiptap/react', () => ({
+vi.mock('@tiptap/react/menus', () => ({
   BubbleMenu: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="bubble-menu">{children}</div>
   ),
