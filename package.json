@@ -3,10 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Your thoughts, your infrastructure.",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
