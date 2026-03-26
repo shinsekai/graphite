@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "check": "biome check src",
+    "check": "biome check src/**/*.ts",
     "test": "vitest run",
     "clean": "rm -rf dist"
   },

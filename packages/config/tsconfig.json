@@ -17,14 +17,7 @@
     "incremental": true,
     "allowImportingTsExtensions": false,
     "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": false,
-    "paths": {
-      "@graphite/web": ["../../apps/web/src"],
-      "@graphite/api": ["../../apps/api/src"],
-      "@graphite/db": ["../../packages/db/src"],
-      "@graphite/shared": ["../../packages/shared/src"],
-      "@graphite/config": ["."]
-    }
+    "verbatimModuleSyntax": false
   },
   "exclude": ["node_modules", "dist", ".turbo", "coverage"]
 }

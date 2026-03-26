@@ -1,6 +1,6 @@
 # Graphite — Product Requirements Document
 
-**Version**: 1.1
+**Version**: 1.2
 **Last updated**: March 2026
 **Status**: Draft
 
@@ -141,16 +141,17 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 | ------ | -------------------------------------------------------------------------------------- |
 | NFR-16 | All code passes Biome linting with zero errors.                                        |
 | NFR-17 | All packages have unit tests. Tests run in CI before every deploy.                     |
-| NFR-18 | Infrastructure is fully reproducible via `pulumi up`.                                  |
+| NFR-18 | Infrastructure is fully reproducible via `just infra-up` (Pulumi).                     |
+| NFR-19 | All project operations runnable from a single Justfile (no hidden tool invocations).   |
 
 ### 3.5 Observability
 
 | ID     | Requirement                                                                            |
 | ------ | -------------------------------------------------------------------------------------- |
-| NFR-19 | Scaleway Cockpit enabled for logs, metrics, and alerting.                              |
-| NFR-20 | Alerts configured for: error rate > 5%, p95 latency > 1s, container restart loops.    |
-| NFR-21 | Structured JSON logging in production for machine-parseable log analysis.              |
-| NFR-22 | Health endpoint checks DB and S3 connectivity, reports degraded/error states.          |
+| NFR-20 | Scaleway Cockpit enabled for logs, metrics, and alerting.                              |
+| NFR-21 | Alerts configured for: error rate > 5%, p95 latency > 1s, container restart loops.    |
+| NFR-22 | Structured JSON logging in production for machine-parseable log analysis.              |
+| NFR-23 | Health endpoint checks DB and S3 connectivity, reports degraded/error states.          |
 
 ---
 
@@ -298,23 +299,31 @@ Scaleway Serverless Container (public endpoint, sandbox v2)
     └──▶ S3 API ──▶ Object Storage (private bucket)
 ```
 
-### 7.3 Provisioning
+### 7.3 Local Development
 
-All resources are defined in Pulumi (TypeScript) and can be created/destroyed with a single command. No manual setup in the Scaleway console except the initial Cloudflare CNAME record.
+Local development uses docker-compose to run the full stack:
 
-### 7.4 Deployment Flow
+- `just up` — starts PostgreSQL + the Graphite app in Docker containers.
+- `just dev` — alternative: starts just PostgreSQL via docker-compose, runs the API and web app natively with Turbo (faster iteration with HMR).
+- `just down` — stops all containers.
+- `just logs` — tails the app container logs.
 
-1. Build Docker image locally or in CI.
-2. Push to Scaleway Container Registry (private).
-3. Run `pulumi up` to deploy the new image.
-4. Pulumi updates the Serverless Container to use the new image tag.
-5. Scaleway handles rolling deployment with zero downtime.
+### 7.4 Provisioning
 
-### 7.5 Cloudflare CNAME Setup (one-time, manual)
+All resources are defined in Pulumi (TypeScript) and can be created/destroyed with `just infra-up`. No manual setup in the Scaleway console except the initial Cloudflare CNAME record.
+
+### 7.5 Deployment Flow
+
+1. `just deploy` (or manually: build → push → pulumi up).
+2. Docker image is built and pushed to Scaleway's private Container Registry.
+3. Pulumi updates the Serverless Container to use the new image tag.
+4. Scaleway handles rolling deployment with zero downtime.
+
+### 7.6 Cloudflare CNAME Setup (one-time, manual)
 
 1. In Cloudflare DNS, add a CNAME record: `graphite` → `{container-default-url}.functions.fnc.fr-par.scw.cloud`.
 2. Initially set proxy status to **DNS only** (gray cloud) so Scaleway can complete the Let's Encrypt HTTP-01 challenge.
-3. Run `pulumi up` — this creates the `scaleway.containers.Domain` resource.
+3. Run `just infra-up` — this creates the `scaleway.containers.Domain` resource.
 4. Wait for the domain status to become `ready` in Scaleway console.
 5. In Cloudflare, switch the CNAME to **Proxied** (orange cloud).
 6. Set SSL/TLS mode to **Full (strict)**.

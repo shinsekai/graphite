@@ -4,10 +4,7 @@
   "private": true,
   "description": "Shared configuration packages",
   "type": "module",
-  "files": [
-    "tsconfig.json",
-    "vitest.config.ts"
-  ],
+  "files": ["tsconfig.json", "vitest.config.ts"],
   "scripts": {
     "check": "echo 'No check needed for config package'"
   },

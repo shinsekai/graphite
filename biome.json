@@ -13,7 +13,10 @@
       ".next",
       ".turbo",
       "coverage",
-      "*.min.js"
+      "*.min.js",
+      "**/*.d.ts",
+      "**/*.d.ts.map",
+      "**/*.js.map"
     ]
   },
   "formatter": {

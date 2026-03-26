@@ -137,12 +137,8 @@
           "name": "images_note_id_notes_id_fk",
           "tableFrom": "images",
           "tableTo": "notes",
-          "columnsFrom": [
-            "note_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["note_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -152,9 +148,7 @@
         "images_s3_key_unique": {
           "name": "images_s3_key_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "s3_key"
-          ]
+          "columns": ["s3_key"]
         }
       },
       "policies": {},

@@ -21,6 +21,7 @@
 | Runtime          | Bun                               |
 | Package manager  | Bun workspaces                    |
 | Monorepo         | Turborepo                         |
+| Task runner      | Just (Justfile)                   |
 | Linting/Format   | Biome                             |
 | API framework    | Hono                              |
 | Frontend         | React 19 + Vite                   |
@@ -51,12 +52,60 @@ graphite/
 ├── infra/                # Pulumi stack (TypeScript)
 ├── docker/
 │   └── Dockerfile        # Multi-stage build
+├── justfile              # Project command runner
+├── docker-compose.yml    # Local dev: postgres + app
 ├── turbo.json
 ├── biome.json
 ├── package.json          # Root workspace config
 ├── CLAUDE.md             # This file
 └── PRD.md
 ```
+
+---
+
+## Justfile
+
+The Justfile is the **single entry point** for all project operations. Developers should never need to remember which underlying tool runs what — every action is a `just <command>`.
+
+```just
+# ── Development ──────────────────────────────────────
+dev             # Start API + Web in parallel (turbo dev)
+install         # bun install
+check           # Biome lint + format check (turbo check)
+test            # Run all tests (turbo test)
+typecheck       # TypeScript type check (turbo typecheck)
+build           # Production build (turbo build)
+
+# ── Docker Compose (full local stack) ────────────────
+up              # Start postgres + app containers (docker compose up -d)
+down            # Stop all containers (docker compose down)
+logs            # Tail app container logs (docker compose logs -f app)
+restart         # Rebuild and restart app container
+
+# ── Database ─────────────────────────────────────────
+db-migrate      # Run Drizzle migrations (turbo db:migrate)
+db-generate     # Generate migration from schema changes (bunx drizzle-kit generate)
+db-studio       # Open Drizzle Studio GUI (bunx drizzle-kit studio)
+
+# ── Docker (standalone image) ────────────────────────
+docker-build    # Build production Docker image
+docker-run      # Run production image locally with test env vars
+
+# ── Infrastructure ───────────────────────────────────
+infra-preview   # Pulumi preview (dry run)
+infra-up        # Pulumi up (deploy)
+deploy          # Full deploy: build → push → pulumi up
+
+# ── Utilities ────────────────────────────────────────
+clean           # Remove node_modules, .turbo, dist
+format          # Auto-format all files (bunx biome format --write .)
+```
+
+**Rules:**
+- Every `just` command must work from the repository root.
+- Commands that operate in subdirectories (e.g., `infra/`) use `cd infra &&` internally.
+- Environment variables for local dev are loaded from `.env` via `set dotenv-load`.
+- The Justfile is the source of truth for how to run things — the README should reference `just` commands, not raw tool invocations.
 
 ---
 
@@ -105,7 +154,7 @@ graphite/
 - Column naming: `camelCase` in TypeScript, Drizzle maps to `snake_case` in SQL.
 - Migrations generated via `drizzle-kit generate`. Never hand-edit migration SQL.
 - Connection pooling: use Drizzle's `postgres` driver (via `postgres` npm package).
-- Database is accessed exclusively via Private Network. No public endpoint.
+- Database is accessed exclusively via Private Network in production. No public endpoint.
 
 ### Shared Package
 
@@ -126,7 +175,7 @@ graphite/
 - Shared schemas: test validation with valid and invalid inputs.
 - Database: test schema definitions and query builders. Use a test database or Drizzle's mock.
 - Minimum coverage expectation: all happy paths + primary error paths.
-- Run tests via `turbo test` (parallelized across packages).
+- Run tests via `just test` (which runs `turbo test`, parallelized across packages).
 
 ---
 
@@ -161,14 +210,16 @@ Environment variables are injected into the Serverless Container. **Sensitive va
 | `VITE_API_URL`               | web     | No      | API base URL for the frontend                        |
 
 **Rules:**
-- `DATABASE_URL` uses the Private Network hostname (e.g., `postgresql://graphite:***@graphite-db.graphite-pn.internal:5432/graphite`). Never a public endpoint.
+- `DATABASE_URL` uses the Private Network hostname in production (e.g., `postgresql://graphite:***@graphite-db.graphite-pn.internal:5432/graphite`). In local dev (docker-compose), it uses `localhost`.
 - Environment variables are validated at startup using Zod in `apps/api/src/env.ts`. If any required variable is missing, the server refuses to start with a clear error message.
 - In Pulumi, sensitive values are set via `secretEnvironmentVariables`, non-sensitive via `environmentVariables`.
+- For local development, create a `.env` file at the project root (git-ignored). The Justfile loads it automatically via `set dotenv-load`.
 
 ---
 
 ## Docker
 
+### Production image (`docker/Dockerfile`):
 - Base image: `oven/bun:1` (alpine variant).
 - Multi-stage build:
   1. **deps**: install all workspace dependencies.
@@ -179,6 +230,27 @@ Environment variables are injected into the Serverless Container. **Sensitive va
 - `.dockerignore` must exclude: `node_modules`, `.turbo`, `dist`, `.env*`, `infra/`.
 - The container must bind to `0.0.0.0` on the `PORT` environment variable. Scaleway requires this for health detection.
 - Start the web server **after** completing all startup tasks (DB connection, migrations check) — Scaleway considers the container ready once the port is bound.
+
+### Local development (`docker-compose.yml`):
+Two services:
+
+1. **postgres**: PostgreSQL 16 for local development.
+   - Image: `postgres:16-alpine`
+   - Port: 5432
+   - Volume for data persistence
+   - Credentials: `graphite` / `graphite` / `graphite`
+
+2. **app**: The Graphite application (production-like).
+   - Builds from `docker/Dockerfile`
+   - Port: 3000
+   - Depends on `postgres` (with healthcheck wait)
+   - Environment variables loaded from `.env` file
+   - Useful for: integration testing, verifying the production build, testing the full stack before deploying
+
+**Workflow guidance:**
+- For day-to-day frontend/backend development: use `just dev` (runs Turbo with HMR, faster iteration).
+- For integration testing or testing the Docker build: use `just up` (runs docker-compose with both services).
+- Both modes connect to the same PostgreSQL instance if the docker-compose postgres is running.
 
 ---
 
@@ -239,7 +311,7 @@ Environment variables are injected into the Serverless Container. **Sensitive va
 - "Always Use HTTPS": enabled.
 - **Initial setup order** (to avoid HTTP-01 challenge failure):
   1. Create the CNAME in Cloudflare with proxy **disabled** (gray cloud / DNS only).
-  2. Run `pulumi up` to create the container and custom domain.
+  2. Run `just infra-up` to create the container and custom domain.
   3. Wait for domain status to become `ready` (Scaleway issues the Let's Encrypt cert).
   4. Switch the Cloudflare CNAME to **proxied** (orange cloud).
   5. After this, cert renewals work automatically through Cloudflare.
