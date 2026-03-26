@@ -4,11 +4,20 @@
   padding: 12px;
   border-bottom: 1px solid #333333;
   cursor: pointer;
-  transition: background-color 150ms ease;
+  transition: background-color 150ms ease, transform 150ms ease;
 }
 
 .item:hover {
   background-color: #2d2d2d;
+}
+
+.item:hover.pinned {
+  background-color: #2d2d2d;
+}
+
+.item:active {
+  background-color: #333333;
+  transform: scale(0.99);
 }
 
 .item:focus-visible {
@@ -17,6 +26,15 @@
 }
 
 .active {
+  background-color: #2d2d2d;
+  border-left: 3px solid #7c5cbf;
+}
+
+.active:hover {
+  background-color: #333333;
+}
+
+.active.pinned {
   background-color: #2d2d2d;
   border-left: 3px solid #7c5cbf;
 }
@@ -37,6 +55,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 150ms ease;
+}
+
+.item:hover .title {
+  color: #f0f0f0;
+}
+
+.active .title {
+  color: #e0e0e0;
 }
 
 .preview {
@@ -46,14 +73,42 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 150ms ease;
+}
+
+.item:hover .preview {
+  color: #b0b0b0;
 }
 
 .timestamp {
   font-size: 11px;
   color: #666666;
+  transition: color 150ms ease;
+}
+
+.item:hover .timestamp {
+  color: #808080;
 }
 
 .pinIcon {
   flex-shrink: 0;
   color: #7c5cbf;
+  transition: transform 150ms ease, color 150ms ease;
+}
+
+.pinned .pinIcon {
+  color: #7c5cbf;
+}
+
+.item:hover .pinIcon {
+  color: #9d7fd6;
+  transform: scale(1.1);
+}
+
+.pinned {
+  border-left: 2px solid #7c5cbf;
+}
+
+.pinned:hover {
+  border-left: 2px solid #9d7fd6;
 }

@@ -7,6 +7,92 @@
   background-color: #252525;
   border-right: 1px solid #333333;
   flex-shrink: 0;
+  transition: transform 300ms ease;
+}
+
+.sidebar.mobileClosed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  transform: translateX(-100%);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar.mobileOpen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  transform: translateX(0);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+.overlay.visible {
+  display: block;
+}
+
+.hamburgerButton {
+  display: none;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 101;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background-color: #2d2d2d;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.hamburgerButton:hover {
+  background-color: #3d3d3d;
+  border-color: #444444;
+}
+
+.hamburgerButton:focus-visible {
+  outline: 2px solid #7c5cbf;
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .hamburgerButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .overlay.visible {
+    display: block;
+  }
 }
 
 .header {
@@ -37,16 +123,25 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 150ms ease;
+  transition: background-color 150ms ease, transform 150ms ease;
 }
 
 .newNoteButton:hover {
   background-color: #6a4cb0;
 }
 
+.newNoteButton:active {
+  transform: scale(0.98);
+}
+
 .newNoteButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.newNoteButton:focus-visible {
+  outline: 2px solid #7c5cbf;
+  outline-offset: 2px;
 }
 
 .newNoteText {

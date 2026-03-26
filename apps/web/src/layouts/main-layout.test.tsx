@@ -81,4 +81,38 @@ describe('MainLayout', () => {
 
     expect(screen.getByTestId('note-editor')).toBeInTheDocument();
   });
+
+  it('should pass sidebar props including isOpen, onClose, and isMobile', async () => {
+    const { Sidebar } = await import('../components/sidebar');
+
+    render(<MainLayout />, { wrapper: createWrapper() });
+
+    expect(Sidebar).toHaveBeenCalled();
+    const sidebarProps = Sidebar.mock.calls[0][0];
+
+    expect(sidebarProps).toHaveProperty('activeNoteId');
+    expect(sidebarProps).toHaveProperty('onSelectNote');
+    expect(sidebarProps).toHaveProperty('isOpen');
+    expect(sidebarProps).toHaveProperty('onClose');
+    expect(sidebarProps).toHaveProperty('isMobile');
+    expect(typeof sidebarProps.onSelectNote).toBe('function');
+    expect(typeof sidebarProps.onClose).toBe('function');
+    expect(typeof sidebarProps.isOpen).toBe('boolean');
+    expect(typeof sidebarProps.isMobile).toBe('boolean');
+  });
+
+  it('should update activeNoteId when selecting a note', async () => {
+    const { Sidebar } = await import('../components/sidebar');
+
+    render(<MainLayout />, { wrapper: createWrapper() });
+
+    const sidebarProps = Sidebar.mock.calls[0][0];
+
+    act(() => {
+      sidebarProps.onSelectNote('123');
+    });
+
+    const updatedProps = Sidebar.mock.calls[Sidebar.mock.calls.length - 1][0];
+    expect(updatedProps.activeNoteId).toBe('123');
+  });
 });

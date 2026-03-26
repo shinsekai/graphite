@@ -4,6 +4,24 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './app';
 
+vi.mock('../hooks/use-notes', () => ({
+  useNotes: () => ({ data: [], isLoading: false }),
+  useSearchNotes: () => ({ data: [], isLoading: false }),
+  useCreateNote: () => ({ mutate: vi.fn() }),
+  useDeleteNote: () => ({ mutate: vi.fn() }),
+  useNote: () => ({ data: null, isLoading: false }),
+}));
+
+vi.mock('../hooks/use-debounce', () => ({
+  useDebounce: (value: string) => value,
+}));
+
+vi.mock('../editor/note-editor', () => ({
+  NoteEditor: vi.fn(({ note }) =>
+    note ? <div>Note Editor</div> : <p>Select a note to start editing...</p>,
+  ),
+}));
+
 function getLocalStorageMock() {
   const store: Record<string, string> = {};
 

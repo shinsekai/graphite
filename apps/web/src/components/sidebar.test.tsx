@@ -52,39 +52,77 @@ function createWrapper() {
 
 describe('Sidebar', () => {
   const onSelectNote = vi.fn();
+  const onClose = vi.fn();
 
   beforeEach(() => {
     onSelectNote.mockClear();
+    onClose.mockClear();
   });
 
   it('should render heading', () => {
-    render(<Sidebar activeNoteId={null} onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId={null}
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     expect(screen.getByText('Graphite')).toBeInTheDocument();
   });
 
   it('should render new note button', () => {
-    render(<Sidebar activeNoteId={null} onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId={null}
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     expect(screen.getByRole('button', { name: 'New note' })).toBeInTheDocument();
   });
 
   it('should render search input', () => {
-    render(<Sidebar activeNoteId={null} onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId={null}
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     expect(screen.getByPlaceholderText('Search notes...')).toBeInTheDocument();
   });
 
   it('should render note list items', async () => {
-    render(<Sidebar activeNoteId={null} onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId={null}
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await waitFor(() => {
       expect(screen.getByText('First Note')).toBeInTheDocument();
@@ -93,9 +131,18 @@ describe('Sidebar', () => {
   });
 
   it('should highlight active note', async () => {
-    render(<Sidebar activeNoteId="1" onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId="1"
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await waitFor(() => {
       const firstNote = screen.getByText('First Note').closest('[role="button"]');
@@ -104,9 +151,18 @@ describe('Sidebar', () => {
   });
 
   it('should call onSelectNote when clicking a note', async () => {
-    render(<Sidebar activeNoteId={null} onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId={null}
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await waitFor(() => {
       expect(screen.getByText('First Note')).toBeInTheDocument();
@@ -119,9 +175,18 @@ describe('Sidebar', () => {
   });
 
   it('should show pin icon for pinned notes', async () => {
-    render(<Sidebar activeNoteId={null} onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId={null}
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await waitFor(() => {
       const pinIcon = document.querySelector('[class*="pinIcon"]');
@@ -130,9 +195,18 @@ describe('Sidebar', () => {
   });
 
   it('should sort pinned notes first', async () => {
-    render(<Sidebar activeNoteId={null} onSelectNote={onSelectNote} />, {
-      wrapper: createWrapper(),
-    });
+    render(
+      <Sidebar
+        activeNoteId={null}
+        onSelectNote={onSelectNote}
+        isOpen={false}
+        onClose={onClose}
+        isMobile={false}
+      />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await waitFor(() => {
       const firstNoteTitle = screen.getByText('First Note');

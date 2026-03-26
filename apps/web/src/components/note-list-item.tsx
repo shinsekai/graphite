@@ -33,7 +33,7 @@ export function NoteListItem({
 
   return (
     <div
-      className={`${styles.item} ${isActive ? styles.active : ''}`}
+      className={`${styles.item} ${isActive ? styles.active : ''} ${note.pinned ? styles.pinned : ''}`}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
       role="button"

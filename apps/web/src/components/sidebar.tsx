@@ -3,15 +3,24 @@ import { useDebounce } from '../hooks/use-debounce';
 import { useNotes, useSearchNotes, useCreateNote, useDeleteNote } from '../hooks/use-notes';
 import { SearchInput } from './search-input';
 import { NoteListItem } from './note-list-item';
-import { Plus } from 'lucide-react';
+import { Plus, Menu, X } from 'lucide-react';
 import styles from './sidebar.module.css';
 
 interface SidebarProps {
   readonly activeNoteId: string | null;
   readonly onSelectNote: (id: string) => void;
+  readonly isOpen?: boolean;
+  readonly onClose?: () => void;
+  readonly isMobile?: boolean;
 }
 
-export function Sidebar({ activeNoteId, onSelectNote }: SidebarProps) {
+export function Sidebar({
+  activeNoteId,
+  onSelectNote,
+  isOpen = false,
+  onClose,
+  isMobile = false,
+}: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedQuery = useDebounce(searchQuery, 300);
 
@@ -59,47 +68,70 @@ export function Sidebar({ activeNoteId, onSelectNote }: SidebarProps) {
   };
 
   return (
-    <aside className={styles.sidebar}>
-      <header className={styles.header}>
-        <h1 className={styles.heading}>Graphite</h1>
-        <button
-          type="button"
-          className={styles.newNoteButton}
-          onClick={handleCreateNote}
-          aria-label="New note"
-        >
-          <Plus size={16} />
-          <span className={styles.newNoteText}>New note</span>
-        </button>
-      </header>
-      <div className={styles.searchContainer}>
-        <SearchInput
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onClear={handleClearSearch}
+    <>
+      <button
+        type="button"
+        className={styles.hamburgerButton}
+        onClick={() => {
+          if (isMobile && onClose) {
+            onClose();
+          }
+        }}
+        aria-label={isMobile && isOpen ? 'Close sidebar' : 'Open sidebar'}
+      >
+        {isMobile && isOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+      <aside
+        className={`${styles.sidebar} ${isMobile ? (isOpen ? styles.mobileOpen : styles.mobileClosed) : ''}`}
+      >
+        <header className={styles.header}>
+          <h1 className={styles.heading}>Graphite</h1>
+          <button
+            type="button"
+            className={styles.newNoteButton}
+            onClick={handleCreateNote}
+            aria-label="New note"
+          >
+            <Plus size={16} />
+            <span className={styles.newNoteText}>New note</span>
+          </button>
+        </header>
+        <div className={styles.searchContainer}>
+          <SearchInput
+            value={searchQuery}
+            onChange={handleSearchChange}
+            onClear={handleClearSearch}
+          />
+        </div>
+        <div className={styles.noteList}>
+          {isLoading || isSearching ? (
+            <div className={styles.loading}>Loading...</div>
+          ) : sortedNotes.length === 0 ? (
+            <div className={styles.empty}>
+              {debouncedQuery.length > 0
+                ? 'No notes found'
+                : 'No notes yet. Create one!'}
+            </div>
+          ) : (
+            sortedNotes.map((note) => (
+              <NoteListItem
+                key={note.id}
+                note={note}
+                isActive={note.id === activeNoteId}
+                onClick={onSelectNote}
+                onDelete={handleDeleteNote}
+              />
+            ))
+          )}
+        </div>
+      </aside>
+      {isMobile && isOpen && (
+        <div
+          className={`${styles.overlay} ${styles.visible}`}
+          onClick={onClose}
+          role="presentation"
         />
-      </div>
-      <div className={styles.noteList}>
-        {isLoading || isSearching ? (
-          <div className={styles.loading}>Loading...</div>
-        ) : sortedNotes.length === 0 ? (
-          <div className={styles.empty}>
-            {debouncedQuery.length > 0
-              ? 'No notes found'
-              : 'No notes yet. Create one!'}
-          </div>
-        ) : (
-          sortedNotes.map((note) => (
-            <NoteListItem
-              key={note.id}
-              note={note}
-              isActive={note.id === activeNoteId}
-              onClick={onSelectNote}
-              onDelete={handleDeleteNote}
-            />
-          ))
-        )}
-      </div>
-    </aside>
+      )}
+    </>
   );
 }

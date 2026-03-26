@@ -15,7 +15,7 @@
   border: 1px solid #333333;
   border-radius: 4px;
   outline: none;
-  transition: border-color 150ms ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .input::placeholder {
@@ -24,6 +24,7 @@
 
 .input:focus {
   border-color: #7c5cbf;
+  box-shadow: 0 0 0 2px rgba(124, 92, 191, 0.3);
 }
 
 .clearButton {
