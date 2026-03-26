@@ -7,7 +7,6 @@ describe('env', () => {
     process.env.DATABASE_URL = undefined;
     process.env.CORS_ORIGIN = undefined;
     process.env.PORT = undefined;
-    process.env.AUTH_TOKEN = undefined;
   });
 
   it('validates a complete env object', () => {
@@ -15,7 +14,6 @@ describe('env', () => {
       DATABASE_URL: 'postgresql://localhost:5432/test',
       CORS_ORIGIN: 'https://example.com',
       PORT: '3001',
-      AUTH_TOKEN: 'test-token',
     };
 
     const result = validateEnv(rawEnv);
@@ -27,7 +25,6 @@ describe('env', () => {
     const rawEnv = {
       DATABASE_URL: 'postgresql://localhost:5432/test',
       CORS_ORIGIN: 'https://example.com',
-      AUTH_TOKEN: 'test-token',
     };
 
     const result = validateEnv(rawEnv);
@@ -38,7 +35,6 @@ describe('env', () => {
   it('fails validation when DATABASE_URL is missing', () => {
     const rawEnv = {
       CORS_ORIGIN: 'https://example.com',
-      AUTH_TOKEN: 'test-token',
     };
 
     const validate = () => validateEnv(rawEnv);
@@ -50,19 +46,6 @@ describe('env', () => {
     const rawEnv = {
       DATABASE_URL: 'not-a-url',
       CORS_ORIGIN: 'https://example.com',
-      AUTH_TOKEN: 'test-token',
-    };
-
-    const validate = () => validateEnv(rawEnv);
-
-    expect(validate).toThrow();
-  });
-
-  it('fails validation when AUTH_TOKEN is empty', () => {
-    const rawEnv = {
-      DATABASE_URL: 'postgresql://localhost:5432/test',
-      CORS_ORIGIN: 'https://example.com',
-      AUTH_TOKEN: '',
     };
 
     const validate = () => validateEnv(rawEnv);
@@ -77,7 +60,6 @@ describe('env', () => {
   it('getEnv reads from process.env', () => {
     process.env.DATABASE_URL = 'postgresql://localhost:5432/test';
     process.env.CORS_ORIGIN = 'https://example.com';
-    process.env.AUTH_TOKEN = 'test-token';
 
     // Note: This test will fail validation if env is invalid
     // and exit the process with code 1, which is expected behavior
@@ -87,6 +69,5 @@ describe('env', () => {
     const env = getEnv();
 
     expect(env.DATABASE_URL).toBe('postgresql://localhost:5432/test');
-    expect(env.AUTH_TOKEN).toBe('test-token');
   });
 });

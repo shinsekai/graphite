@@ -3,7 +3,6 @@ import type { DrizzleDB } from '@graphite/db';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import type { Env } from './env';
-import { auth } from './middleware/auth';
 import { errorHandler } from './middleware/error-handler';
 import { createNotesRoutes } from './routes/notes';
 
@@ -51,9 +50,6 @@ export function createApp(deps: AppDeps): Hono {
       timestamp: new Date().toISOString(),
     });
   });
-
-  // Auth middleware for API routes only
-  app.use('/api/*', auth(deps.env));
 
   // API routes
   app.route('/api/notes', createNotesRoutes(deps));

@@ -4,7 +4,6 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   CORS_ORIGIN: z.string().url(),
   PORT: z.string().default('3000'),
-  AUTH_TOKEN: z.string().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;

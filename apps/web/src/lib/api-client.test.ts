@@ -1,75 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { notes, getAuthToken, setAuthToken, clearAuthToken, validateToken } from './api-client';
-
-function getLocalStorageMock() {
-  const store: Record<string, string> = {};
-
-  return {
-    getItem: (key: string) => store[key] ?? null,
-    setItem: (key: string, value: string) => {
-      store[key] = value;
-    },
-    removeItem: (key: string) => {
-      delete store[key];
-    },
-    clear: () => {
-      Object.keys(store).forEach((key) => delete store[key]);
-    },
-  };
-}
+import { notes } from './api-client';
 
 describe('api-client', () => {
-  let localStorageMock: ReturnType<typeof getLocalStorageMock>;
-
   beforeEach(() => {
-    localStorageMock = getLocalStorageMock();
-    vi.stubGlobal('localStorage', localStorageMock);
     vi.stubGlobal('fetch', vi.fn());
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
-  });
-
-  describe('getAuthToken, setAuthToken, clearAuthToken', () => {
-    it('gets null when no token is set', () => {
-      expect(getAuthToken()).toBeNull();
-    });
-
-    it('sets and gets token', () => {
-      setAuthToken('test-token');
-      expect(getAuthToken()).toBe('test-token');
-    });
-
-    it('clears token', () => {
-      setAuthToken('test-token');
-      clearAuthToken();
-      expect(getAuthToken()).toBeNull();
-    });
-  });
-
-  describe('validateToken', () => {
-    it('returns true for valid token', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: { notes: [] } }),
-      } as Response);
-
-      const result = await validateToken('valid-token');
-
-      expect(result).toBe(true);
-    });
-
-    it('returns false for invalid token', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: { code: 'UNAUTHORIZED', message: 'Unauthorized' } }),
-      } as Response);
-
-      const result = await validateToken('invalid-token');
-
-      expect(result).toBe(false);
-    });
   });
 
   describe('notes.list', () => {
@@ -88,7 +26,6 @@ describe('api-client', () => {
         ok: true,
         json: async () => ({ data: mockNotes }),
       } as Response);
-      setAuthToken('test-token');
 
       const result = await notes.list();
 
@@ -112,7 +49,6 @@ describe('api-client', () => {
         ok: true,
         json: async () => ({ data: mockNote }),
       } as Response);
-      setAuthToken('test-token');
 
       const result = await notes.get('550e8400-e29b-41d4-a716-446655440000');
 
@@ -136,7 +72,6 @@ describe('api-client', () => {
         ok: true,
         json: async () => ({ data: mockNote }),
       } as Response);
-      setAuthToken('test-token');
 
       const result = await notes.create({ title: 'New Note' });
 
@@ -160,7 +95,6 @@ describe('api-client', () => {
         ok: true,
         json: async () => ({ data: mockNote }),
       } as Response);
-      setAuthToken('test-token');
 
       const result = await notes.update('550e8400-e29b-41d4-a716-446655440000', {
         title: 'Updated Note',
@@ -176,7 +110,6 @@ describe('api-client', () => {
         ok: true,
         json: async () => ({ success: true }),
       } as Response);
-      setAuthToken('test-token');
 
       await notes.remove('550e8400-e29b-41d4-a716-446655440000');
     });
@@ -198,7 +131,6 @@ describe('api-client', () => {
         ok: true,
         json: async () => ({ data: mockNotes }),
       } as Response);
-      setAuthToken('test-token');
 
       const result = await notes.search('test');
 
