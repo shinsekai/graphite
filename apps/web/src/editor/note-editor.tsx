@@ -6,6 +6,7 @@ import { getExtensions } from './extensions';
 import { FloatingToolbar } from './floating-toolbar';
 import { EditorToolbar } from './editor-toolbar';
 import styles from './note-editor.module.css';
+import './prose.css';
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
@@ -29,17 +30,19 @@ export function NoteEditor({ note }: NoteEditorProps) {
 
   const editor = useEditor({
     extensions: getExtensions(),
-    content: typeof note?.content === 'object' && note?.content !== null
-      ? note.content
-      : { type: 'doc', content: [] },
+    content:
+      typeof note?.content === 'object' && note?.content !== null
+        ? note.content
+        : { type: 'doc', content: [] },
     editable: !!note,
-    onUpdate: ({ editor: e }) => {
+    onUpdate: () => {
       setIsDirty(true);
       setSaveStatus('idle');
     },
     editorProps: {
       attributes: {
-        class: styles.editorContent,
+        class: `${styles.editorContent} prose-editor`,
+        'data-placeholder': 'Start typing...',
       },
     },
   });
@@ -133,7 +136,7 @@ export function NoteEditor({ note }: NoteEditorProps) {
           className={styles.titleInput}
           placeholder="Untitled note"
           value={title}
-          onChange={(e) => {
+          onChange={e => {
             setTitle(e.target.value);
             setIsDirty(true);
             setSaveStatus('idle');
@@ -143,11 +146,7 @@ export function NoteEditor({ note }: NoteEditorProps) {
           {saveStatus === 'saving' && <span className={styles.saving}>Saving...</span>}
           {saveStatus === 'saved' && <span className={styles.saved}>Saved</span>}
           {saveStatus === 'error' && (
-            <button
-              type="button"
-              className={styles.retry}
-              onClick={handleRetry}
-            >
+            <button type="button" className={styles.retry} onClick={handleRetry}>
               Error — retry
             </button>
           )}
