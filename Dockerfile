@@ -19,6 +19,7 @@ COPY . .
 
 RUN bun install --frozen-lockfile
 RUN bun run build
+RUN ls -la apps/web/dist/index.html || (echo "ERROR: Web build output not found" && exit 1)
 
 # Stage 3: Runtime
 FROM oven/bun:1-alpine AS runtime

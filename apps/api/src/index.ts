@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import { createDb, runMigrations } from '@graphite/db';
 import { createApp } from './app';
 import { getEnv } from './env';
@@ -15,7 +16,19 @@ async function main() {
 
   // Create DB connection after migrations
   const db = createDb(env.DATABASE_URL);
-  const app = createApp({ env, db });
+
+  // Verify web dist exists before starting server
+  const webDistPath = resolve('./apps/web/dist');
+  const indexFile = Bun.file(resolve(webDistPath, 'index.html'));
+  if (!(await indexFile.exists())) {
+    console.warn(
+      `WARNING: Web dist not found at ${webDistPath}/index.html — SPA will not be served`,
+    );
+  } else {
+    console.log(`Serving SPA from ${webDistPath}`);
+  }
+
+  const app = createApp({ env, db, webDistPath });
 
   const _server = Bun.serve({
     fetch: app.fetch,
