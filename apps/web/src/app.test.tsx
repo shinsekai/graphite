@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './app';
 
 function getLocalStorageMock() {
@@ -35,10 +36,14 @@ describe('@graphite/web', () => {
   it('renders Graphite heading', () => {
     localStorageMock.setItem('auth_token', 'test-token');
 
+    const queryClient = new QueryClient();
+
     const { container } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>,
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>,
     );
     expect(container.querySelector('h1')?.textContent).toBe('Graphite');
   });

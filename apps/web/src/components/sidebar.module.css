@@ -1,0 +1,90 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  min-width: 240px;
+  height: 100vh;
+  background-color: #252525;
+  border-right: 1px solid #333333;
+  flex-shrink: 0;
+}
+
+.header {
+  flex-shrink: 0;
+  padding: 16px;
+  border-bottom: 1px solid #333333;
+}
+
+.heading {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.newNoteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e0e0e0;
+  background-color: #7c5cbf;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.newNoteButton:hover {
+  background-color: #6a4cb0;
+}
+
+.newNoteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.newNoteText {
+  color: inherit;
+}
+
+.searchContainer {
+  flex-shrink: 0;
+  padding: 12px;
+  border-bottom: 1px solid #333333;
+}
+
+.noteList {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.noteList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.noteList::-webkit-scrollbar-track {
+  background-color: #1e1e1e;
+}
+
+.noteList::-webkit-scrollbar-thumb {
+  background-color: #444444;
+  border-radius: 4px;
+}
+
+.noteList::-webkit-scrollbar-thumb:hover {
+  background-color: #555555;
+}
+
+.loading,
+.empty {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #666666;
+}

@@ -1,0 +1,59 @@
+.item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-bottom: 1px solid #333333;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.item:hover {
+  background-color: #2d2d2d;
+}
+
+.item:focus-visible {
+  outline: 2px solid #7c5cbf;
+  outline-offset: -2px;
+}
+
+.active {
+  background-color: #2d2d2d;
+  border-left: 3px solid #7c5cbf;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e0e0e0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #a0a0a0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #666666;
+}
+
+.pinIcon {
+  flex-shrink: 0;
+  color: #7c5cbf;
+}

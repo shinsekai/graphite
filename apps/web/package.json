@@ -15,6 +15,7 @@
   "dependencies": {
     "@graphite/shared": "workspace:*",
     "@tanstack/react-query": "^5.67.3",
+    "lucide-react": "^0.477.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.4.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@graphite/config": "workspace:*",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
