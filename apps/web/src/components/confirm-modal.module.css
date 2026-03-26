@@ -1,0 +1,100 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  width: 400px;
+  max-width: 90vw;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default);
+}
+
+.open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 8px 0;
+}
+
+.message {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0 0 24px 0;
+  line-height: var(--line-height-normal);
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelButton {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+
+.cancelButton:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+
+.confirmButton {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-default);
+}
+
+.confirmButton.danger {
+  background: #e05252;
+}
+
+.confirmButton.danger:hover {
+  background: #c94444;
+}
+
+.confirmButton.default {
+  background: var(--color-accent);
+}
+
+.confirmButton.default:hover {
+  background: var(--color-accent-hover);
+}
+
+/* For aria attributes */
+.titleId {
+  /* Used as ID reference for aria-labelledby */
+}
+
+.messageId {
+  /* Used as ID reference for aria-describedby */
+}
