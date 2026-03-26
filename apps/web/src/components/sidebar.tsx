@@ -92,8 +92,7 @@ export function Sidebar({
             onClick={handleCreateNote}
             aria-label="New note"
           >
-            <Plus size={16} />
-            <span className={styles.newNoteText}>New note</span>
+            <Plus size={16} className={styles.icon} />
           </button>
         </header>
         <div className={styles.searchContainer}>

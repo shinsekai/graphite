@@ -9,7 +9,7 @@
 
 - **Name**: Graphite
 - **Tagline**: "Your thoughts, your infrastructure."
-- **Description**: A private, self-hosted note-taking app with rich-text editing, deployed on Scaleway using Serverless Containers and Managed PostgreSQL, following Scaleway security best practices (VPC isolation, Secret Manager, Cockpit observability).
+- **Description**: A private, self-hosted note-taking app with rich-text editing, deployed on Scaleway using Serverless Containers and Managed PostgreSQL, following Scaleway security best practices (VPC isolation, Secret Manager, Cockpit observability). Authentication is handled externally by Cloudflare Access (zero-trust tunnel).
 
 ---
 
@@ -28,10 +28,10 @@
 | Rich-text editor | TipTap (ProseMirror)              |
 | ORM              | Drizzle ORM                       |
 | Database         | PostgreSQL (Scaleway Managed RDB) |
-| Object storage   | Scaleway Object Storage (S3 API)  |
 | IaC              | Pulumi (TypeScript)               |
 | Container        | Docker (multi-stage, Bun base)    |
 | Testing          | Vitest                            |
+| Authentication   | Cloudflare Access (zero-trust)    |
 | DNS / CDN        | Cloudflare (proxied CNAME)        |
 | Secrets          | Scaleway Secret Manager           |
 | Observability    | Scaleway Cockpit (Grafana)        |
@@ -124,7 +124,7 @@ format          # Auto-format all files (bunx biome format --write .)
 
 ### API (Hono)
 
-- All route handlers go in `apps/api/src/routes/`. One file per resource (e.g., `notes.ts`, `uploads.ts`).
+- All route handlers go in `apps/api/src/routes/`. One file per resource (e.g., `notes.ts`).
 - Use Hono's built-in validator middleware with Zod schemas from `@graphite/shared`.
 - Every endpoint returns typed JSON. Use consistent response shapes:
   - Success: `{ data: T }`
@@ -132,7 +132,8 @@ format          # Auto-format all files (bunx biome format --write .)
 - HTTP status codes: `200` OK, `201` created, `400` validation error, `404` not found, `500` server error.
 - All database queries go through Drizzle. No raw SQL strings in route files.
 - Use `hono/cors` middleware. Configure allowed origins via environment variable.
-- Health check endpoint: `GET /health` returns `{ status: "ok" | "degraded" | "error", timestamp: string, checks: { database, storage } }`.
+- **No auth middleware in the app.** Authentication is handled externally by Cloudflare Access before requests reach the container.
+- Health check endpoint: `GET /health` returns `{ status: "ok" | "error", timestamp: string, checks: { database } }`.
 
 ### Frontend (React)
 
@@ -145,6 +146,7 @@ format          # Auto-format all files (bunx biome format --write .)
 - TipTap extensions are configured in `apps/web/src/editor/`. Each custom extension gets its own file.
 - Icons: use `lucide-react`. No other icon libraries.
 - No `console.log` in committed code. Use a logger utility if needed.
+- **No auth page, no auth guard, no token management.** The user is authenticated by Cloudflare Access before they reach the app.
 
 ### Database (Drizzle)
 
@@ -170,7 +172,7 @@ format          # Auto-format all files (bunx biome format --write .)
 - **Every task must include unit tests.** No PR or task is considered complete without them.
 - Test framework: Vitest (configured in `packages/config`).
 - Test file naming: `*.test.ts` co-located next to the source file.
-- API routes: test with Hono's `app.request()` test helper. Mock the database layer.
+- API routes: test with Hono's `app.request()` test helper. Mock the database layer. No auth headers needed in tests.
 - Frontend components: test with `@testing-library/react`. No snapshot tests.
 - Shared schemas: test validation with valid and invalid inputs.
 - Database: test schema definitions and query builders. Use a test database or Drizzle's mock.
@@ -199,14 +201,8 @@ Environment variables are injected into the Serverless Container. **Sensitive va
 | Variable                     | Used by | Secret? | Description                                         |
 | ---------------------------- | ------- | ------- | --------------------------------------------------- |
 | `DATABASE_URL`               | api     | Yes     | PostgreSQL connection string (Private Network host)  |
-| `S3_ENDPOINT`                | api     | No      | Scaleway Object Storage endpoint                     |
-| `S3_BUCKET`                  | api     | No      | Bucket name for uploads                              |
-| `S3_ACCESS_KEY`              | api     | Yes     | S3 access key                                        |
-| `S3_SECRET_KEY`              | api     | Yes     | S3 secret key                                        |
-| `S3_REGION`                  | api     | No      | Scaleway region (e.g., `fr-par`)                     |
 | `CORS_ORIGIN`                | api     | No      | Allowed CORS origin (e.g., `https://graphite.example.com`) |
 | `PORT`                       | api     | No      | Server port (default: 3000)                          |
-| `AUTH_TOKEN`                 | api     | Yes     | Bearer token for API authentication                  |
 | `VITE_API_URL`               | web     | No      | API base URL for the frontend                        |
 
 **Rules:**
@@ -214,6 +210,7 @@ Environment variables are injected into the Serverless Container. **Sensitive va
 - Environment variables are validated at startup using Zod in `apps/api/src/env.ts`. If any required variable is missing, the server refuses to start with a clear error message.
 - In Pulumi, sensitive values are set via `secretEnvironmentVariables`, non-sensitive via `environmentVariables`.
 - For local development, create a `.env` file at the project root (git-ignored). The Justfile loads it automatically via `set dotenv-load`.
+- **No `AUTH_TOKEN` variable.** Authentication is handled by Cloudflare Access, not the application.
 
 ---
 
@@ -225,7 +222,7 @@ Environment variables are injected into the Serverless Container. **Sensitive va
   1. **deps**: install all workspace dependencies.
   2. **build**: run `turbo build` (builds both web and api).
   3. **runtime**: copy only production artifacts + `node_modules`. Run with `bun run apps/api/src/index.ts`.
-- The API serves the built SPA static files via Hono's `serveStatic` middleware.
+- The API serves the built SPA static files via Bun's native file API (not Hono's serveStatic).
 - Single container, single port. No Nginx.
 - `.dockerignore` must exclude: `node_modules`, `.turbo`, `dist`, `.env*`, `infra/`.
 - The container must bind to `0.0.0.0` on the `PORT` environment variable. Scaleway requires this for health detection.
@@ -251,6 +248,7 @@ Two services:
 - For day-to-day frontend/backend development: use `just dev` (runs Turbo with HMR, faster iteration).
 - For integration testing or testing the Docker build: use `just up` (runs docker-compose with both services).
 - Both modes connect to the same PostgreSQL instance if the docker-compose postgres is running.
+- **No auth token needed** — in local dev there's no Cloudflare Access, so the app is open. In production, Cloudflare Access blocks unauthenticated requests before they reach the container.
 
 ---
 
@@ -277,34 +275,30 @@ Two services:
    - The `DATABASE_URL` uses the private hostname assigned by DHCP/IPAM.
    - Daily backups enabled (Scaleway default).
 
-4. **Scaleway Object Storage bucket** (`graphite-uploads-{suffix}`):
-   - ACL: private.
-   - CORS rule: allow `POST`, `PUT`, `GET` from `CORS_ORIGIN`.
-   - Images served through the API (signed URLs or proxy). Bucket is never publicly accessible.
-
-5. **Scaleway Serverless Container** (`graphite-app`):
+4. **Scaleway Serverless Container** (`graphite-app`):
    - Image: from `graphite-registry`.
    - Sandbox: **v2** (explicitly set — v1 has clock drift issues).
    - Min scale: 0, max scale: 3.
    - CPU: 1000m (1 vCPU), memory: 1024 MB.
    - Port: 3000.
    - HTTPS only: enabled (HTTP → HTTPS redirect enforced at Scaleway level).
-   - Privacy policy: **public** (app-level auth via Bearer token; Cloudflare provides WAF).
+   - Privacy policy: **public** (Cloudflare Access handles authentication at the edge; the container itself has no auth layer).
    - Attached to Private Network `graphite-pn` (for DB access over private NIC).
-   - **Environment variables** (non-sensitive): `S3_ENDPOINT`, `S3_BUCKET`, `S3_REGION`, `CORS_ORIGIN`, `PORT`.
-   - **Secret environment variables** (encrypted at rest): `DATABASE_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `AUTH_TOKEN`.
+   - **Environment variables** (non-sensitive): `CORS_ORIGIN`, `PORT`.
+   - **Secret environment variables** (encrypted at rest): `DATABASE_URL`.
 
-6. **Scaleway Serverless Container Domain** (`graphite.example.com`):
+5. **Scaleway Serverless Container Domain** (`graphite.example.com`):
    - Managed via `scaleway.containers.Domain` Pulumi resource.
    - Points to the container. TLS certificate auto-generated by Scaleway via Let's Encrypt HTTP-01 challenge.
 
-7. **Scaleway Cockpit** (observability):
+6. **Scaleway Cockpit** (observability):
    - Enabled for the project. All Serverless Containers automatically send logs and metrics.
    - Grafana dashboard accessible via Scaleway console.
    - Alerts configured for: container error rate > 5%, p95 latency > 1s, container restart loops.
 
-### Cloudflare DNS Configuration (manual, documented):
+### Cloudflare Configuration (manual, documented):
 
+**DNS (CNAME):**
 - CNAME record: `graphite.example.com` → `{container-default-url}.functions.fnc.fr-par.scw.cloud`.
 - Proxy status: **Proxied** (orange cloud) — enables WAF, DDoS protection, and edge caching for static assets.
 - SSL/TLS mode: **Full (strict)** — Cloudflare ↔ Scaleway both use valid TLS certificates.
@@ -316,10 +310,17 @@ Two services:
   4. Switch the Cloudflare CNAME to **proxied** (orange cloud).
   5. After this, cert renewals work automatically through Cloudflare.
 
+**Cloudflare Access (zero-trust authentication):**
+- A Cloudflare Access application is configured for `graphite.example.com`.
+- Authentication policy: configured per user preference (e.g., email OTP, GitHub SSO, Google SSO).
+- All requests to the domain are authenticated by Cloudflare before they reach the Scaleway container.
+- The Graphite app itself has **no auth middleware** — it trusts that Cloudflare Access has already verified the user.
+- Cloudflare Access is configured manually in the Cloudflare Zero Trust dashboard (not managed by Pulumi).
+
 ### Pulumi secrets management:
 
 - Sensitive config values are set via `pulumi config set --secret`.
-- These are: `db-password`, `auth-token`, `s3-access-key`, `s3-secret-key`.
+- These are: `db-password`.
 - Pulumi passes them to the container as `secretEnvironmentVariables`, which Scaleway encrypts at rest.
 
 ### Outputs:
@@ -327,7 +328,6 @@ Two services:
 - `apiUrl`: the custom domain URL (`https://graphite.example.com`).
 - `containerDefaultUrl`: the Scaleway-assigned `.scw.cloud` URL (for CNAME target).
 - `dbHost`: the private hostname of the database.
-- `bucketEndpoint`: the S3 endpoint.
 - `registryEndpoint`: the container registry endpoint.
 - `cockpitUrl`: the Grafana dashboard URL.
 
@@ -363,16 +363,19 @@ The UI follows a dark-first, minimal design language inspired by Obsidian:
 - API response time: < 100ms for CRUD operations (p95).
 - Frontend bundle size: < 500KB gzipped (excluding TipTap).
 - Time to interactive: < 2 seconds on 3G.
-- Image uploads: max 10MB per file. Compress on client before upload.
 - Note content: stored as TipTap JSON (ProseMirror doc). Max 1MB per note.
 
 ---
 
 ## Security
 
+### Authentication:
+- **Cloudflare Access (zero-trust)** authenticates all users at the edge before requests reach the Scaleway container.
+- The Graphite application has **no auth middleware, no login page, no token management**. It trusts Cloudflare Access completely.
+- In local development, there is no authentication — the app is open on `localhost:3000`. This is intentional; the app is only accessible locally.
+- Cloudflare Access is configured in the Cloudflare Zero Trust dashboard (email OTP, GitHub SSO, or other identity providers).
+
 ### Application level:
-- No authentication framework — this is a single-user private app. Use a simple shared secret token (`Authorization: Bearer <token>`) validated by Hono middleware.
-- Token is compared using timing-safe comparison to prevent timing attacks.
 - XSS mitigated by TipTap's built-in sanitization and React's default escaping.
 - SQL injection prevented by Drizzle's parameterized queries. No raw SQL.
 - CORS locked to the specific origin (`CORS_ORIGIN`).
@@ -380,11 +383,11 @@ The UI follows a dark-first, minimal design language inspired by Obsidian:
 
 ### Infrastructure level (Scaleway best practices):
 - **Network isolation**: Database has no public endpoint. All DB traffic flows over Private Network. The Serverless Container is the only resource with a public-facing endpoint.
-- **Secrets encrypted at rest**: All sensitive environment variables use Scaleway's `secretEnvironmentVariables`, which are encrypted in storage and not visible in the console after creation.
+- **Secrets encrypted at rest**: Sensitive environment variables use Scaleway's `secretEnvironmentVariables`, which are encrypted in storage and not visible in the console after creation.
 - **HTTPS enforced**: Both at the Scaleway container level (HTTP → HTTPS redirect) and at Cloudflare (Always Use HTTPS). SSL mode: Full (strict).
 - **WAF and DDoS protection**: Cloudflare proxy (orange cloud) provides edge security, rate limiting, and bot mitigation in front of the Scaleway container.
+- **Zero-trust authentication**: Cloudflare Access ensures only authenticated users can reach the app. Unauthenticated requests are blocked at the Cloudflare edge, never reaching the container.
 - **Sandbox v2**: Serverless Container uses the recommended v2 sandbox for better security isolation and no clock drift.
-- **Private bucket**: S3 bucket ACL is private. Images are served through the API via signed URLs or proxy — the bucket is never directly exposed.
 - **Container Registry**: Private. Scaleway's own registry is used instead of Docker Hub to avoid rate limiting and supply chain risks.
 - **Observability**: Scaleway Cockpit provides logs, metrics, and alerting. Anomalous behavior (error spikes, latency degradation) triggers alerts.
-- **Minimal attack surface**: Single container, single port, no SSH access, no public database endpoint, no public storage endpoint.
+- **Minimal attack surface**: Single container, single port, no SSH access, no public database endpoint, no app-level auth code to exploit.

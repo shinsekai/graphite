@@ -10,7 +10,7 @@ interface SearchInputProps {
 }
 
 export function SearchInput({
-  placeholder = 'Search notes...',
+  placeholder = 'Search...',
   value,
   onChange,
   onClear,

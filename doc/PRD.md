@@ -1,6 +1,6 @@
 # Graphite — Product Requirements Document
 
-**Version**: 1.2
+**Version**: 1.4
 **Last updated**: March 2026
 **Status**: Draft
 
@@ -14,7 +14,7 @@ Existing note-taking applications (Notion, Obsidian Sync, Evernote) either store
 
 ### 1.2 Solution
 
-Graphite is a self-hosted, private note-taking application deployed entirely on the user's own infrastructure (Scaleway). It provides a modern rich-text editing experience with an Obsidian-inspired dark aesthetic, backed by a PostgreSQL database and S3-compatible object storage — all provisioned and managed through infrastructure-as-code, following Scaleway's security best practices (VPC isolation, encrypted secrets, observability).
+Graphite is a self-hosted, private note-taking application deployed entirely on the user's own infrastructure (Scaleway). It provides a modern rich-text editing experience with an Obsidian-inspired dark aesthetic, backed by a PostgreSQL database — all provisioned and managed through infrastructure-as-code, following Scaleway's security best practices (VPC isolation, encrypted secrets, observability). Authentication is handled externally by Cloudflare Access (zero-trust tunnel) — the app itself has no login screen.
 
 ### 1.3 Target User
 
@@ -24,6 +24,7 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 - Prefers a dark, distraction-free writing environment.
 - Values simplicity over feature bloat.
 - Has the ability to deploy and maintain a Docker container on cloud infrastructure.
+- Already uses Cloudflare Access for their private applications.
 
 ### 1.4 Non-Goals (v1)
 
@@ -35,6 +36,8 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 - Mobile-native apps (responsive web only).
 - Wiki-style `[[links]]` and backlinks / graph view.
 - End-to-end encryption (infrastructure is private; TLS in transit + VPC isolation is sufficient).
+- Image uploads and inline images (may be added in v2).
+- App-level authentication (handled by Cloudflare Access).
 
 ---
 
@@ -64,42 +67,32 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 | FR-13 | Editor supports inline code and fenced code blocks with syntax highlighting.                             | Must     |
 | FR-14 | Editor supports blockquotes.                                                                             | Must     |
 | FR-15 | Editor supports hyperlinks (insert, edit, remove, click to open).                                        | Must     |
-| FR-16 | Editor supports inline images (upload via drag-and-drop, paste from clipboard, or file picker).          | Must     |
-| FR-17 | Editor supports horizontal rules / dividers.                                                             | Must     |
-| FR-18 | Editor supports undo/redo (Ctrl+Z / Ctrl+Shift+Z).                                                      | Must     |
-| FR-19 | Formatting is accessible via a floating toolbar (appears on text selection) and keyboard shortcuts.       | Must     |
-| FR-20 | Editor supports tables (insert, add/remove rows and columns, basic cell editing).                        | Could    |
+| FR-16 | Editor supports horizontal rules / dividers.                                                             | Must     |
+| FR-17 | Editor supports undo/redo (Ctrl+Z / Ctrl+Shift+Z).                                                      | Must     |
+| FR-18 | Formatting is accessible via a floating toolbar (appears on text selection) and keyboard shortcuts.       | Must     |
+| FR-19 | Editor supports tables (insert, add/remove rows and columns, basic cell editing).                        | Could    |
 
-### 2.3 Image Handling
-
-| ID    | Requirement                                                                                              | Priority |
-| ----- | -------------------------------------------------------------------------------------------------------- | -------- |
-| FR-21 | Uploaded images are stored in Scaleway Object Storage (S3-compatible, private bucket).                   | Must     |
-| FR-22 | Images are client-side compressed/resized before upload (max 2048px on longest edge, JPEG quality 85%).  | Should   |
-| FR-23 | Upload progress is shown in the editor while an image is being uploaded.                                 | Should   |
-| FR-24 | Images are served through the API (proxied or via time-limited signed URLs). Never expose bucket directly.| Must     |
-| FR-25 | Orphaned images (not referenced by any note) are cleaned up periodically.                                | Could    |
-
-### 2.4 User Interface
+### 2.3 User Interface
 
 | ID    | Requirement                                                                                              | Priority |
 | ----- | -------------------------------------------------------------------------------------------------------- | -------- |
-| FR-26 | Application has a fixed left sidebar showing the note list, and a main editor pane.                      | Must     |
-| FR-27 | Sidebar displays note title, a content preview (first ~80 characters), and relative timestamp.           | Must     |
-| FR-28 | Sidebar has a search input at the top that filters notes in real time.                                   | Must     |
-| FR-29 | A "New note" button is prominently placed in the sidebar.                                                | Must     |
-| FR-30 | Dark theme is the default. Follows the aesthetic defined in CLAUDE.md.                                   | Must     |
-| FR-31 | Light theme is available as an alternative, toggled via a settings control.                               | Should   |
-| FR-32 | UI is responsive: sidebar collapses to a hamburger menu on viewports < 768px.                            | Should   |
-| FR-33 | Keyboard shortcut `Ctrl+K` opens a command palette for quick actions (new note, search, theme toggle).   | Could    |
+| FR-20 | Application has a fixed left sidebar showing the note list, and a main editor pane.                      | Must     |
+| FR-21 | Sidebar displays note title, a content preview (first ~80 characters), and relative timestamp.           | Must     |
+| FR-22 | Sidebar has a search input at the top that filters notes in real time.                                   | Must     |
+| FR-23 | A "New note" button is prominently placed in the sidebar.                                                | Must     |
+| FR-24 | Dark theme is the default. Follows the aesthetic defined in CLAUDE.md.                                   | Must     |
+| FR-25 | Light theme is available as an alternative, toggled via a settings control.                               | Should   |
+| FR-26 | UI is responsive: sidebar collapses to a hamburger menu on viewports < 768px.                            | Should   |
+| FR-27 | Keyboard shortcut `Ctrl+K` opens a command palette for quick actions (new note, search, theme toggle).   | Could    |
 
-### 2.5 Authentication
+### 2.4 Authentication
 
 | ID    | Requirement                                                                                              | Priority |
 | ----- | -------------------------------------------------------------------------------------------------------- | -------- |
-| FR-34 | API endpoints are protected by a bearer token (shared secret configured via Scaleway secret env var).     | Must     |
-| FR-35 | Frontend stores the token in memory (prompted on first visit, persisted in localStorage).                 | Must     |
-| FR-36 | Unauthorized requests return 401 with a clear error message. Frontend redirects to a token entry screen.  | Must     |
+| FR-28 | Authentication is handled externally by Cloudflare Access (zero-trust tunnel).                            | Must     |
+| FR-29 | The app has no login page, no auth guard, and no token management.                                        | Must     |
+| FR-30 | On first visit, the user is redirected to Cloudflare Access login (email OTP, SSO, etc.).                 | Must     |
+| FR-31 | After Cloudflare authenticates the user, they land directly on the main editor UI.                        | Must     |
 
 ---
 
@@ -127,31 +120,30 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 | ID     | Requirement                                                                            |
 | ------ | -------------------------------------------------------------------------------------- |
 | NFR-08 | All traffic encrypted via TLS. HTTPS enforced at both Cloudflare and Scaleway levels.  |
-| NFR-09 | S3 bucket is private. No public access. Images served via API proxy or signed URLs.    |
-| NFR-10 | No secrets in client-side code, logs, or error responses.                              |
-| NFR-11 | Content-Security-Policy headers set to prevent XSS.                                    |
-| NFR-12 | Database accessible only via Private Network. No public endpoint.                      |
-| NFR-13 | Sensitive env vars use Scaleway's secret environment variables (encrypted at rest).     |
-| NFR-14 | Serverless Container uses sandbox v2 for proper isolation and no clock drift.           |
-| NFR-15 | Cloudflare proxy (orange cloud) provides WAF and DDoS protection at the edge.          |
+| NFR-09 | No secrets in client-side code, logs, or error responses.                              |
+| NFR-10 | Content-Security-Policy headers set to prevent XSS.                                    |
+| NFR-11 | Database accessible only via Private Network. No public endpoint.                      |
+| NFR-12 | Sensitive env vars use Scaleway's secret environment variables (encrypted at rest).     |
+| NFR-13 | Serverless Container uses sandbox v2 for proper isolation and no clock drift.           |
+| NFR-14 | Cloudflare Access (zero-trust) authenticates users at the edge before requests reach the container. |
 
 ### 3.4 Maintainability
 
 | ID     | Requirement                                                                            |
 | ------ | -------------------------------------------------------------------------------------- |
-| NFR-16 | All code passes Biome linting with zero errors.                                        |
-| NFR-17 | All packages have unit tests. Tests run in CI before every deploy.                     |
-| NFR-18 | Infrastructure is fully reproducible via `just infra-up` (Pulumi).                     |
-| NFR-19 | All project operations runnable from a single Justfile (no hidden tool invocations).   |
+| NFR-15 | All code passes Biome linting with zero errors.                                        |
+| NFR-16 | All packages have unit tests. Tests run in CI before every deploy.                     |
+| NFR-17 | Infrastructure is fully reproducible via `just infra-up` (Pulumi).                     |
+| NFR-18 | All project operations runnable from a single Justfile (no hidden tool invocations).   |
 
 ### 3.5 Observability
 
 | ID     | Requirement                                                                            |
 | ------ | -------------------------------------------------------------------------------------- |
-| NFR-20 | Scaleway Cockpit enabled for logs, metrics, and alerting.                              |
-| NFR-21 | Alerts configured for: error rate > 5%, p95 latency > 1s, container restart loops.    |
-| NFR-22 | Structured JSON logging in production for machine-parseable log analysis.              |
-| NFR-23 | Health endpoint checks DB and S3 connectivity, reports degraded/error states.          |
+| NFR-19 | Scaleway Cockpit enabled for logs, metrics, and alerting.                              |
+| NFR-20 | Alerts configured for: error rate > 5%, p95 latency > 1s, container restart loops.    |
+| NFR-21 | Structured JSON logging in production for machine-parseable log analysis.              |
+| NFR-22 | Health endpoint checks DB connectivity, reports ok/error states.                       |
 
 ---
 
@@ -174,23 +166,13 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 - `idx_notes_updated_at` on `updated_at DESC` (sidebar ordering).
 - `idx_notes_search` GIN index on `to_tsvector('english', plaintext || ' ' || title)` (full-text search).
 
-### 4.2 Images Table
-
-| Column       | Type                      | Constraints                          | Description                          |
-| ------------ | ------------------------- | ------------------------------------ | ------------------------------------ |
-| `id`         | `uuid`                    | PK, default `gen_random_uuid()`      | Unique image identifier              |
-| `note_id`    | `uuid`                    | FK → notes.id, nullable              | Associated note (null = orphaned)    |
-| `s3_key`     | `varchar(1024)`           | NOT NULL, UNIQUE                     | Object key in S3 bucket              |
-| `filename`   | `varchar(255)`            | NOT NULL                             | Original filename                    |
-| `mime_type`  | `varchar(100)`            | NOT NULL                             | MIME type (image/jpeg, image/png)    |
-| `size_bytes` | `integer`                 | NOT NULL                             | File size in bytes                   |
-| `created_at` | `timestamp with timezone` | NOT NULL, default `now()`            | Upload timestamp                     |
-
 ---
 
 ## 5. API Specification
 
 ### 5.1 Notes Endpoints
+
+All endpoints are unauthenticated at the app level. Cloudflare Access handles authentication before requests reach the container.
 
 | Method   | Path              | Description              | Request Body                      | Response                  |
 | -------- | ----------------- | ------------------------ | --------------------------------- | ------------------------- |
@@ -203,18 +185,11 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 
 **`NoteSummary`**: `{ id, title, preview, pinned, updatedAt }` (preview = first 80 chars of plaintext).
 
-### 5.2 Upload Endpoint
+### 5.2 System Endpoints
 
-| Method | Path            | Description    | Request Body        | Response                              |
-| ------ | --------------- | -------------- | ------------------- | ------------------------------------- |
-| `POST` | `/api/uploads`  | Upload image   | `multipart/form-data` (file field) | `{ data: { id, url } }` (201) |
-| `GET`  | `/api/uploads/:id` | Get image   | —                   | Image binary (proxied from S3)        |
-
-### 5.3 System Endpoints
-
-| Method | Path         | Description          | Response                                                                           |
-| ------ | ------------ | -------------------- | ---------------------------------------------------------------------------------- |
-| `GET`  | `/health`    | Health check (no auth) | `{ status: "ok" | "degraded" | "error", timestamp, checks: { database, storage } }` |
+| Method | Path         | Description          | Response                                                          |
+| ------ | ------------ | -------------------- | ----------------------------------------------------------------- |
+| `GET`  | `/health`    | Health check         | `{ status: "ok" | "error", timestamp, checks: { database } }`    |
 
 ---
 
@@ -223,14 +198,18 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 ### 6.1 First Visit
 
 1. User opens Graphite URL in browser (`https://graphite.example.com`).
-2. Request flows through Cloudflare (WAF, DDoS protection) → Scaleway Serverless Container.
-3. Frontend detects no stored token → shows a minimal token entry screen ("Enter your access token").
-4. User enters the bearer token (configured in their deployment via Scaleway secret env var).
-5. Token is validated against the API (`GET /health` with auth header).
-6. On success, token is stored in `localStorage`, user sees the main app.
-7. On failure, error message is shown, user can retry.
+2. Cloudflare Access intercepts the request and presents the zero-trust login page (email OTP, GitHub SSO, etc.).
+3. User authenticates via their configured identity provider.
+4. Cloudflare sets an authentication cookie and forwards the request to the Scaleway container.
+5. The Graphite SPA loads. User lands directly on the main editor UI — no additional login.
 
-### 6.2 Creating and Editing a Note
+### 6.2 Returning Visit
+
+1. User opens Graphite URL. Cloudflare Access cookie is still valid.
+2. Request passes through to the container immediately.
+3. The Graphite SPA loads instantly — no login, no redirect.
+
+### 6.3 Creating and Editing a Note
 
 1. User clicks "New note" in the sidebar.
 2. A new untitled note is created (optimistically added to sidebar).
@@ -240,22 +219,13 @@ A single technical user (developer, engineer, privacy-focused professional) who:
 6. After 1.5s of inactivity, content is auto-saved. Status indicator shows "Saving..." then "Saved".
 7. If save fails, status shows "Error saving" with a retry button.
 
-### 6.3 Searching Notes
+### 6.4 Searching Notes
 
 1. User clicks the search input in the sidebar (or presses `Ctrl+P`).
 2. User types a query.
 3. After 300ms debounce, results are fetched from `GET /api/notes/search?q=...`.
 4. Sidebar updates to show matching notes, highlighted.
 5. Clearing the search restores the default sorted list.
-
-### 6.4 Inserting an Image
-
-1. User drags an image onto the editor (or pastes from clipboard, or uses the toolbar button).
-2. A placeholder with a progress bar appears inline in the editor.
-3. Image is compressed client-side, then uploaded via `POST /api/uploads`.
-4. API stores the image in the private S3 bucket and records metadata in the database.
-5. On success, the placeholder is replaced with the rendered image (src = `/api/uploads/:id`).
-6. On failure, the placeholder shows an error with a retry option.
 
 ---
 
@@ -268,10 +238,10 @@ All infrastructure runs on Scaleway (Paris region, `fr-par`), following Scaleway
 - **Network**: Scaleway VPC with a dedicated Private Network. All backend resources (database, container) communicate over the Private Network, isolated from the public internet.
 - **Compute**: Scaleway Serverless Container (sandbox v2, auto-scaling 0-3 instances). The only resource with a public-facing endpoint.
 - **Database**: Scaleway Managed Database for PostgreSQL 16 (DB-DEV-S plan). Attached to Private Network only — public endpoint disabled.
-- **Storage**: Scaleway Object Storage bucket (S3-compatible API, private ACL, CORS configured for the app domain).
 - **Registry**: Scaleway Container Registry (private). Preferred over Docker Hub to avoid rate limiting.
 - **Secrets**: Sensitive environment variables use Scaleway's secret environment variables (encrypted at rest, not visible in console after creation).
 - **Observability**: Scaleway Cockpit (managed Grafana) for logs, metrics, and alerting.
+- **Authentication**: Cloudflare Access (zero-trust tunnel). Authenticates users at the Cloudflare edge before requests reach Scaleway. The app has no auth layer.
 - **DNS**: Cloudflare CNAME (proxied) pointing to the container's default URL. Provides WAF, DDoS protection, and edge caching.
 - **TLS**: Dual enforcement — Scaleway auto-generates a Let's Encrypt certificate for the custom domain; Cloudflare terminates TLS at the edge with "Full (strict)" SSL mode.
 - **Custom domain**: Managed via `scaleway.containers.Domain` Pulumi resource, bound to `graphite.example.com`.
@@ -282,7 +252,12 @@ All infrastructure runs on Scaleway (Paris region, `fr-par`), following Scaleway
 User (Browser)
     │
     ▼ HTTPS
-Cloudflare (proxied CNAME)
+Cloudflare Access (zero-trust authentication)
+  - User authenticates via email OTP / SSO
+  - Authenticated cookie set
+    │
+    ▼ HTTPS
+Cloudflare Proxy (orange cloud CNAME)
   - WAF, DDoS protection
   - Edge caching for static assets
   - SSL/TLS: Full (strict)
@@ -291,12 +266,10 @@ Cloudflare (proxied CNAME)
 Scaleway Serverless Container (public endpoint, sandbox v2)
   - Hono API + Static SPA
   - HTTPS-only redirect enforced
-  - Auth middleware (Bearer token)
+  - No auth middleware (trusts Cloudflare Access)
     │
-    ├──▶ Private Network ──▶ Managed PostgreSQL 16
-    │         (no public endpoint, DHCP-managed IP)
-    │
-    └──▶ S3 API ──▶ Object Storage (private bucket)
+    └──▶ Private Network ──▶ Managed PostgreSQL 16
+              (no public endpoint, DHCP-managed IP)
 ```
 
 ### 7.3 Local Development
@@ -308,9 +281,11 @@ Local development uses docker-compose to run the full stack:
 - `just down` — stops all containers.
 - `just logs` — tails the app container logs.
 
+In local development, there is no Cloudflare Access — the app is open on `localhost:3000`. This is intentional and safe since it's only accessible locally.
+
 ### 7.4 Provisioning
 
-All resources are defined in Pulumi (TypeScript) and can be created/destroyed with `just infra-up`. No manual setup in the Scaleway console except the initial Cloudflare CNAME record.
+All resources are defined in Pulumi (TypeScript) and can be created/destroyed with `just infra-up`. No manual setup in the Scaleway console. Cloudflare Access and DNS are configured manually in the Cloudflare dashboard.
 
 ### 7.5 Deployment Flow
 
@@ -319,8 +294,9 @@ All resources are defined in Pulumi (TypeScript) and can be created/destroyed wi
 3. Pulumi updates the Serverless Container to use the new image tag.
 4. Scaleway handles rolling deployment with zero downtime.
 
-### 7.6 Cloudflare CNAME Setup (one-time, manual)
+### 7.6 Cloudflare Setup (one-time, manual)
 
+**DNS (CNAME):**
 1. In Cloudflare DNS, add a CNAME record: `graphite` → `{container-default-url}.functions.fnc.fr-par.scw.cloud`.
 2. Initially set proxy status to **DNS only** (gray cloud) so Scaleway can complete the Let's Encrypt HTTP-01 challenge.
 3. Run `just infra-up` — this creates the `scaleway.containers.Domain` resource.
@@ -328,6 +304,12 @@ All resources are defined in Pulumi (TypeScript) and can be created/destroyed wi
 5. In Cloudflare, switch the CNAME to **Proxied** (orange cloud).
 6. Set SSL/TLS mode to **Full (strict)**.
 7. Enable "Always Use HTTPS" under SSL/TLS → Edge Certificates.
+
+**Cloudflare Access (zero-trust):**
+1. In the Cloudflare Zero Trust dashboard, create a new Access Application.
+2. Application domain: `graphite.example.com`.
+3. Configure an Access Policy with the desired identity provider (email OTP, GitHub, Google, etc.).
+4. Save. All requests to `graphite.example.com` now require authentication via Cloudflare Access.
 
 ---
 
@@ -338,6 +320,6 @@ All resources are defined in Pulumi (TypeScript) and can be created/destroyed wi
 | Notes CRUD latency (p95)      | < 100ms        |
 | Time to interactive           | < 2s           |
 | Autosave reliability          | 99.9% success  |
-| Monthly infra cost            | < €15          |
+| Monthly infra cost            | < €10          |
 | Deployment time (push to live)| < 5 minutes    |
-| Security posture              | No public DB endpoint, no public bucket, secrets encrypted |
+| Security posture              | No public DB endpoint, secrets encrypted, zero-trust auth at edge |

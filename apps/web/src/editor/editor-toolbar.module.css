@@ -16,8 +16,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   background-color: transparent;
   border: none;
@@ -29,20 +29,21 @@
 }
 
 .toolbar button:hover:not(:disabled) {
-  background-color: var(--color-border);
+  background-color: var(--color-hover);
 }
 
 .toolbar button:active:not(:disabled) {
-  background-color: var(--color-border-hover);
+  background-color: var(--color-hover);
 }
 
 .toolbar button.active {
-  background-color: var(--color-accent);
-  color: #ffffff;
+  background-color: var(--color-active);
+  color: var(--color-accent);
 }
 
 .toolbar button.active:hover {
-  background-color: var(--color-accent-hover);
+  background-color: var(--color-active);
+  color: var(--color-accent);
 }
 
 .toolbar button:focus-visible {
