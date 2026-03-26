@@ -19,7 +19,13 @@ export class NotesService {
       .from(notes)
       .orderBy(desc(notes.pinned), desc(notes.updatedAt));
 
-    return result.map(note => ({
+    return result.map((note: {
+      id: string;
+      title: string;
+      plaintext: string;
+      pinned: boolean;
+      updatedAt: Date;
+    }) => ({
       id: note.id,
       title: note.title,
       preview: note.plaintext.slice(0, NOTE_PREVIEW_LENGTH),
@@ -136,7 +142,13 @@ export class NotesService {
       .where(sql`${tsvector} @@ ${tsquery}`)
       .orderBy(desc(rank), desc(notes.updatedAt));
 
-    return result.map(note => ({
+    return result.map((note: {
+      id: string;
+      title: string;
+      plaintext: string;
+      pinned: boolean;
+      updatedAt: Date;
+    }) => ({
       id: note.id,
       title: note.title,
       preview: note.plaintext.slice(0, NOTE_PREVIEW_LENGTH),

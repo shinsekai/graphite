@@ -23,6 +23,9 @@ build:
 up:
     docker compose up -d
 
+up-build:
+    docker compose up -d --build app
+
 down:
     docker compose down
 
@@ -61,7 +64,7 @@ deploy:
 
 # ── Utilities ────────────────────────────────────────
 clean:
-    rm -rf node_modules .turbo apps/*/dist packages/*/dist
+    rm -rf node_modules .turbo apps/*/{node_modules,.turbo,dist} packages/*/{node_modules,.turbo,dist}
 
 format:
     bunx biome format --write .

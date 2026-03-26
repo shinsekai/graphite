@@ -7,3 +7,4 @@
 
 export * from './schema/index.js';
 export { createDb, type DrizzleDB } from './client.js';
+export { runMigrations } from './migrate.js';

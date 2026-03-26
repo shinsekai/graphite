@@ -4,6 +4,7 @@
   "private": true,
   "description": "Drizzle ORM database layer",
   "type": "module",
+  "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -12,6 +13,7 @@
     "check": "biome check src/**/*.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "db:migrate": "bun run src/migrate-runner.ts",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -22,6 +24,7 @@
   },
   "devDependencies": {
     "@graphite/config": "workspace:*",
+    "@types/node": "^22.10.5",
     "drizzle-kit": "^0.31.2",
     "typescript": "^5.8.0",
     "vitest": "^3.0.7"
