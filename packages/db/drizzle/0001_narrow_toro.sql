@@ -1,1 +1,0 @@
-ALTER TABLE "images" ALTER COLUMN "note_id" DROP NOT NULL;

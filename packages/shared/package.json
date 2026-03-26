@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc",
     "check": "biome check src/**/*.ts",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "clean": "rm -rf dist"
   },

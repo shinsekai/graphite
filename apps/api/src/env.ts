@@ -2,11 +2,6 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
-  S3_ENDPOINT: z.string().url(),
-  S3_BUCKET: z.string().min(1),
-  S3_ACCESS_KEY: z.string().min(1),
-  S3_SECRET_KEY: z.string().min(1),
-  S3_REGION: z.string().min(1),
   CORS_ORIGIN: z.string().url(),
   PORT: z.string().default('3000'),
   AUTH_TOKEN: z.string().min(1),

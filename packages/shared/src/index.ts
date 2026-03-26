@@ -7,8 +7,6 @@
 
 // Re-export all schemas
 export * from './schemas/note';
-export * from './schemas/image';
-export * from './schemas/upload';
 export * from './schemas/common';
 
 // Re-export constants

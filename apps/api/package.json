@@ -9,11 +9,11 @@
     "start": "bun run src/index.ts",
     "build": "tsc",
     "check": "biome check src",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1017.0",
     "@graphite/db": "workspace:*",
     "@graphite/shared": "workspace:*",
     "hono": "^4.7.6",
