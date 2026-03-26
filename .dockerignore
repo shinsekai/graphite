@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Turbo
+.turbo
+
+# Build outputs
+dist
+build
+.next
+.nuxt
+
+# Environment
+.env
+.env.*
+.env.local
+
+# Testing
+coverage
+.nyc_output
+
+# Database
+*.sqlite
+*.db
+
+# Misc
+.DS_Store
+*.log
+*.pid
+
+# API dist (no longer needed - we run TS directly)
+apps/api/dist
+
+# Infra (not needed in container)
+infra
+
+# Git
+.git
+.gitignore
