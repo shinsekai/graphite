@@ -88,6 +88,39 @@ describe('NoteListItem', () => {
     expect(item.className).toContain('active');
   });
 
+  it('should not apply active style when isActive is false', () => {
+    const onClick = vi.fn();
+    render(<NoteListItem note={getMockNote(60000)} onClick={onClick} isActive={false} />);
+
+    const item = screen.getByRole('button');
+    expect(item.className).not.toContain('active');
+  });
+
+  it('should apply pinned style when note is pinned', () => {
+    const onClick = vi.fn();
+    render(<NoteListItem note={mockUntitledNote} onClick={onClick} />);
+
+    const item = screen.getByRole('button');
+    expect(item.className).toContain('pinned');
+  });
+
+  it('should not apply pinned style when note is not pinned', () => {
+    const onClick = vi.fn();
+    render(<NoteListItem note={getMockNote(60000)} onClick={onClick} />);
+
+    const item = screen.getByRole('button');
+    expect(item.className).not.toContain('pinned');
+  });
+
+  it('should apply both active and pinned styles when active and pinned', () => {
+    const onClick = vi.fn();
+    render(<NoteListItem note={mockUntitledNote} onClick={onClick} isActive />);
+
+    const item = screen.getByRole('button');
+    expect(item.className).toContain('active');
+    expect(item.className).toContain('pinned');
+  });
+
   it('should call onClick with note id when clicked', () => {
     const onClick = vi.fn();
     render(<NoteListItem note={getMockNote(60000)} onClick={onClick} />);
