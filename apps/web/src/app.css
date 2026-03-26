@@ -1,14 +1,4 @@
-:root {
-  --color-background: #1e1e1e;
-  --color-surface: #252525;
-  --color-elevated: #2d2d2d;
-  --color-text-primary: #e0e0e0;
-  --color-text-secondary: #a0a0a0;
-  --color-text-muted: #666666;
-  --color-border: #333333;
-  --color-border-hover: #444444;
-  --color-accent: #7c5cbf;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 * {
   box-sizing: border-box;

@@ -1,42 +1,34 @@
 .item {
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  border-bottom: 1px solid #333333;
+  padding: 8px 12px;
   cursor: pointer;
-  transition: background-color 150ms ease, transform 150ms ease;
+  transition: background-color 150ms ease;
+  border-left: 2px solid transparent;
 }
 
 .item:hover {
-  background-color: #2d2d2d;
-}
-
-.item:hover.pinned {
-  background-color: #2d2d2d;
+  background-color: var(--color-hover);
 }
 
 .item:active {
-  background-color: #333333;
-  transform: scale(0.99);
+  background-color: var(--color-hover);
 }
 
 .item:focus-visible {
-  outline: 2px solid #7c5cbf;
-  outline-offset: -2px;
+  outline: none;
+  background-color: var(--color-active);
+  border-left: 2px solid var(--color-active-border);
 }
 
 .active {
-  background-color: #2d2d2d;
-  border-left: 3px solid #7c5cbf;
+  background-color: var(--color-active);
+  border-left: 2px solid var(--color-accent);
 }
 
 .active:hover {
-  background-color: #333333;
-}
-
-.active.pinned {
-  background-color: #2d2d2d;
-  border-left: 3px solid #7c5cbf;
+  background-color: var(--color-active);
+  border-left: 2px solid var(--color-accent);
 }
 
 .header {
@@ -44,71 +36,51 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .title {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #e0e0e0;
+  color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: color 150ms ease;
-}
-
-.item:hover .title {
-  color: #f0f0f0;
 }
 
 .active .title {
-  color: #e0e0e0;
+  color: var(--color-text-primary);
 }
 
 .preview {
-  margin: 0 0 4px 0;
+  margin: 0;
   font-size: 12px;
-  color: #a0a0a0;
+  color: var(--color-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: color 150ms ease;
-}
-
-.item:hover .preview {
-  color: #b0b0b0;
 }
 
 .timestamp {
   font-size: 11px;
-  color: #666666;
-  transition: color 150ms ease;
-}
-
-.item:hover .timestamp {
-  color: #808080;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
 }
 
 .pinIcon {
   flex-shrink: 0;
-  color: #7c5cbf;
-  transition: transform 150ms ease, color 150ms ease;
+  color: var(--color-text-muted);
+  transition: transform 150ms ease;
+  width: 12px;
+  height: 12px;
 }
 
 .pinned .pinIcon {
-  color: #7c5cbf;
+  color: var(--color-text-muted);
 }
 
 .item:hover .pinIcon {
-  color: #9d7fd6;
+  color: var(--color-text-secondary);
   transform: scale(1.1);
-}
-
-.pinned {
-  border-left: 2px solid #7c5cbf;
-}
-
-.pinned:hover {
-  border-left: 2px solid #9d7fd6;
 }

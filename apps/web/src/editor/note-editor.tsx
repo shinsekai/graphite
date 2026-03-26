@@ -134,7 +134,7 @@ export function NoteEditor({ note }: NoteEditorProps) {
         <input
           type="text"
           className={styles.titleInput}
-          placeholder="Untitled note"
+          placeholder="Untitled"
           value={title}
           onChange={e => {
             setTitle(e.target.value);

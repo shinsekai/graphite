@@ -24,7 +24,7 @@ up:
     docker compose up -d
 
 up-build:
-    docker compose up -d --build app
+    docker compose build --no-cache app && docker compose up -d
 
 down:
     docker compose down
@@ -36,7 +36,7 @@ logs:
     docker compose logs -f app
 
 restart:
-    docker compose up -d --build app
+    docker compose build --no-cache app && docker compose up -d
 
 # ── Database ─────────────────────────────────────────
 db-migrate:
@@ -50,7 +50,7 @@ db-studio:
 
 # ── Docker (standalone image) ────────────────────────
 docker-build:
-    docker build -f Dockerfile -t graphite:local .
+    docker build --no-cache -f Dockerfile -t graphite:local .
 
 docker-run:
     docker run --env-file .env -p 3000:3000 graphite:local
