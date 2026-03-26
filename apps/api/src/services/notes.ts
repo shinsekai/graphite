@@ -3,13 +3,9 @@ import { notes } from '@graphite/db';
 import type { CreateNote, Note, NoteSummary, UpdateNote } from '@graphite/shared';
 import { NOTE_PREVIEW_LENGTH } from '@graphite/shared';
 import { desc, eq, sql } from 'drizzle-orm';
-import type { UploadsService } from './uploads';
 
 export class NotesService {
-  constructor(
-    private readonly db: DrizzleDB,
-    private readonly uploadsService?: UploadsService,
-  ) {}
+  constructor(private readonly db: DrizzleDB) {}
 
   async list(): Promise<NoteSummary[]> {
     const result = await this.db
@@ -120,11 +116,6 @@ export class NotesService {
       return null;
     }
 
-    // Clean up images associated with the note
-    if (this.uploadsService) {
-      await this.uploadsService.removeByNoteId(id);
-    }
-
     return result[0];
   }
 
@@ -155,6 +146,6 @@ export class NotesService {
   }
 }
 
-export function createNotesService(db: DrizzleDB, uploadsService?: UploadsService): NotesService {
-  return new NotesService(db, uploadsService);
+export function createNotesService(db: DrizzleDB): NotesService {
+  return new NotesService(db);
 }

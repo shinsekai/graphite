@@ -11,12 +11,10 @@ import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 import type { AppDeps } from '../app';
 import { createNotesService } from '../services/notes';
-import { createUploadsService } from '../services/uploads';
 
 export function createNotesRoutes(deps: AppDeps): Hono {
   const app = new Hono();
-  const uploadsService = createUploadsService(deps.db as DrizzleDB, deps.s3);
-  const notesService = createNotesService(deps.db as DrizzleDB, uploadsService);
+  const notesService = createNotesService(deps.db as DrizzleDB);
 
   // Search route must come before /:id to avoid param capture
   app.get(
