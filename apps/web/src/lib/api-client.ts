@@ -16,13 +16,10 @@ async function request<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = localStorage.getItem('auth_token');
-
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   });
@@ -35,27 +32,6 @@ async function request<T>(
   }
 
   return response.json() as Promise<T>;
-}
-
-function getAuthToken(): string | null {
-  return localStorage.getItem('auth_token');
-}
-
-function setAuthToken(token: string): void {
-  localStorage.setItem('auth_token', token);
-}
-
-function clearAuthToken(): void {
-  localStorage.removeItem('auth_token');
-}
-
-async function validateToken(token: string): Promise<boolean> {
-  try {
-    await request<{ data: { notes: NoteSummary[] } }>('/notes');
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 const notes = {
@@ -99,4 +75,4 @@ const notes = {
   },
 };
 
-export { notes, getAuthToken, setAuthToken, clearAuthToken, validateToken };
+export { notes };
