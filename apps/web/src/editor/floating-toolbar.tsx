@@ -1,4 +1,4 @@
-import { BubbleMenu } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
 import {
   Bold,
   Italic,
@@ -41,7 +41,7 @@ export function FloatingToolbar({ editor }: FloatingToolbarProps) {
   };
 
   return (
-    <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }} className={styles.bubbleMenu}>
+    <BubbleMenu editor={editor} options={{}} className={styles.bubbleMenu}>
       <div className={styles.toolbar}>
         <button
           type="button"
