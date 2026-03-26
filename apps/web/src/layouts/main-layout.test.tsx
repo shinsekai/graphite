@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MainLayout } from './main-layout';
@@ -9,6 +9,23 @@ vi.mock('../components/sidebar', () => ({
       <button onClick={() => onSelectNote('123')}>Select Note</button>
     </aside>
   )),
+}));
+
+vi.mock('../hooks/use-notes', () => ({
+  useNote: vi.fn((id) => ({
+    data: id === '123' ? { id: '123', title: 'Test', content: {} } : null,
+    isLoading: false,
+  })),
+}));
+
+vi.mock('../editor/note-editor', () => ({
+  NoteEditor: vi.fn(({ note }) =>
+    note ? (
+      <div data-testid="note-editor">Note Editor</div>
+    ) : (
+      <p>Select a note to start editing...</p>
+    ),
+  ),
 }));
 
 function createWrapper() {
@@ -51,7 +68,9 @@ describe('MainLayout', () => {
     ).toBeInTheDocument();
   });
 
-  it('should handle note selection', () => {
+  it('should handle note selection', async () => {
+    const { useNote } = await import('../hooks/use-notes');
+
     render(<MainLayout />, { wrapper: createWrapper() });
 
     const selectButton = screen.getByText('Select Note');
@@ -60,6 +79,6 @@ describe('MainLayout', () => {
       selectButton.click();
     });
 
-    expect(screen.getByText('Note editor for 123')).toBeInTheDocument();
+    expect(screen.getByTestId('note-editor')).toBeInTheDocument();
   });
 });
